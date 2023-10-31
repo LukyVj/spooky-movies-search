@@ -64,7 +64,7 @@ const RenderHits = ({
     <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
       <h2 className="sr-only">Horror Movies List</h2>
 
-      <ul className="flex overflow-scroll gap-4">
+      <ul className="flex overflow-scroll gap-4 scrollbar-hide">
         {hits.map((hit: any) => {
           return <Hit {...hit} />;
         })}
@@ -109,10 +109,16 @@ const CustomInfiniteHits = ({
   genre?: string;
 }) => {
   const { hits, isLastPage, showMore } = useInfiniteHits();
+  const [currentHits, setCurrentHits] = useState(hits);
 
   const { query } = useSearchBox();
 
   const currentFacetFilters = [`genres: ${genre}`];
+
+  useEffect(() => {
+    setCurrentHits(hits);
+  }, [hits]);
+
   return (
     <div className="mb-8 py-8">
       <header
@@ -124,7 +130,11 @@ const CustomInfiniteHits = ({
         <CustomRefinementList attribute="release_year" />
       </header>
       <CustomConfigure facetFilters={currentFacetFilters} query={query} />
-      <RenderHits isLastPage={isLastPage} showMore={showMore} hits={hits} />
+      <RenderHits
+        isLastPage={isLastPage}
+        showMore={showMore}
+        hits={currentHits}
+      />
     </div>
   );
 };

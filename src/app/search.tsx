@@ -8,6 +8,30 @@ import { Movie } from './types';
 
 const Search = () => {
   const shrink = useShrinkOnScroll(200);
+  const [allGenres, setAllGenres] = useState<any[]>([]);
+  const scrollToEnd = () => {
+    window.scrollTo({
+      top: 500,
+      behavior: "smooth",
+    });
+  };
+
+  const getAllGenres = async () => {
+    const response = await ALGOLIA_INDEX.searchForFacetValues("genres", "", {
+      maxFacetHits: 100,
+    }).then((facet) => {
+      return facet.facetHits;
+    });
+
+    return response;
+  };
+
+  useEffect(() => {
+    getAllGenres().then((data) => {
+      console.log(data);
+      setAllGenres(data);
+    });
+  }, []);
 
   return (
     <div className="relative">

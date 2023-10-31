@@ -18,7 +18,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-instantsearch": "^7.2.1",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "tailwind-scrollbar-hide": "^1.1.7"
   },
   "devDependencies": {
     "@types/node": "^20",
