@@ -1,10 +1,10 @@
-import cx from "classnames";
-
-import { Highlight } from "react-instantsearch";
-import { useState } from "react";
-import { Movie } from "../types";
-import { sentenceToColor } from "../helpers";
 import { StarIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import cx from "classnames";
+import { useState } from "react";
+import { Highlight } from "react-instantsearch";
+
+import { sentenceToColor } from "../helpers";
+import { Movie } from "../types";
 
 const Hit = (hit: Movie) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -61,6 +61,7 @@ const Hit = (hit: Movie) => {
                   {hit.overview?.split(" ").slice(0, 30).join(" ") + "..."}
                 </p>
                 <div className="mt-3 flex items-center flex-col">
+                  <p className="text-sm text-gray-300">{hit.release_year}</p>
                   <p className="">{hit.vote_average / 2 - 1} out of 5 stars</p>
                   <div className="flex items-center">
                     {[0, 1, 2, 3, 4].map((rating) => (

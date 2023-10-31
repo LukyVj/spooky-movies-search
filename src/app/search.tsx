@@ -4,10 +4,8 @@ import cx from "classnames";
 import algoliasearch from "algoliasearch/lite";
 import {
   Configure,
-  Index,
   InstantSearch,
   SearchBox,
-  useInstantSearch,
   useSearchBox,
 } from "react-instantsearch";
 import CustomInfiniteHits from "@/app/components/hits";
@@ -19,40 +17,11 @@ import {
 } from "@heroicons/react/20/solid";
 import { useShrinkOnScroll } from "./hooks/useShrinkOnScroll";
 import { ALGOLIA_INDEX } from "./helpers/algolia";
-import { Movie } from "./types";
 
 const searchClient = algoliasearch(
   "PVXYD3XMQP",
   "69636a752c16bee55133304edea993f7"
 );
-
-const MoviesList = ({ query }: { query: string }) => {
-  const { results } = useInstantSearch();
-  const rawCategories = (results.hits as Movie[]).reduce<
-    Record<string, Movie[]>
-  >((acc, curr) => {
-    curr.genres.forEach((genre) => {
-      (acc[genre] ||= []).push(curr);
-    });
-    return acc;
-  }, {});
-
-  const categories = Object.entries(rawCategories || {})
-    .sort((a, b) => b[1].length - a[1].length)
-    .slice(0, 100);
-
-  return (
-    <>
-      {categories.map(([category, hits]) => (
-        <Index indexName="horror_movies">
-          <Configure query={query} />
-
-          <CustomInfiniteHits title={category} genre={category} />
-        </Index>
-      ))}
-    </>
-  );
-};
 
 const Search = () => {
   const [query, setQuery] = useState("");
@@ -60,7 +29,7 @@ const Search = () => {
   const [allGenres, setAllGenres] = useState<any[]>([]);
   const scrollToEnd = () => {
     window.scrollTo({
-      top: document.body.scrollHeight,
+      top: 500,
       behavior: "smooth",
     });
   };
@@ -110,9 +79,15 @@ const Search = () => {
           <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
         </div>
       </div>
-      <InstantSearch searchClient={searchClient} indexName="horror_movies">
-        <MoviesList query={query} />
-      </InstantSearch>
+      {allGenres.map((genre) => {
+        return (
+          <InstantSearch searchClient={searchClient} indexName="horror_movies">
+            <Configure query={query} />
+
+            <CustomInfiniteHits title={genre.value} genre={genre.value} />
+          </InstantSearch>
+        );
+      })}
     </div>
   );
 };

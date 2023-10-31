@@ -23,6 +23,7 @@ export interface Movie extends Hit<BaseHit> {
   budget: number;
   belongs_to_collection: Collection | null;
   release_date: number;
+  release_year: number;
   runtime: number;
   bayesian_avg: number;
   objectID: string;
