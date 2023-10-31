@@ -6,7 +6,8 @@ import { Highlight } from "react-instantsearch";
 import { sentenceToColor } from "../helpers";
 import { Movie } from "../types";
 
-const Hit = (hit: Movie) => {
+const Hit = (hit: any) => {
+  // console.log(hit);
   const [isHovered, setIsHovered] = useState(false);
   return (
     <li
@@ -21,9 +22,7 @@ const Hit = (hit: Movie) => {
           isHovered ? "w-[600px]" : "w-auto"
         )}
         style={{
-          background: `url(https://www.themoviedb.org/t/p/w1280/${
-            hit.backdrop_path !== "NA" ? hit.backdrop_path : hit.poster_path
-          })no-repeat center center/cover`,
+          background: `url(https://www.themoviedb.org/t/p/w1280/${hit.backdrop_path}no-repeat center center/cover`,
         }}
       >
         <div className="relative z-10 flex">

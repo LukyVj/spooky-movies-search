@@ -28,7 +28,7 @@ export function translatePopularityToStars(popularity: number) {
   // Translate the popularity value to the 0-5 scale
   const stars = popularity * 10;
 
-  console.log(stars);
+  // console.log(stars);
 
   return stars;
 }

@@ -11,8 +11,8 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255; /* Red text for dark mode */
-    --background-start-rgb: 10, 10, 10; /* Dark gray background for dark mode */
-    --background-end-rgb: 10, 10, 10; /* Dark gray background for dark mode */
+    --background-start-rgb: 20, 20, 20; /* Dark gray background for dark mode */
+    --background-end-rgb: 20, 20, 20; /* Dark gray background for dark mode */
   }
 }
 
