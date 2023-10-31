@@ -38,3 +38,7 @@ jspm_packages
 .next
 
 .env
+
+
+.merge_index.js
+.modify_hits.js

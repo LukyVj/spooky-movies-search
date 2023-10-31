@@ -1,6 +1,9 @@
 const algoliasearch = require("algoliasearch");
 
-const client = algoliasearch("PVXYD3XMQP", "6e7c0f06fd1de7cccb6baecf8665b911");
+const client = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+  process.env.ALGOLIA_ADMIN_API_KEY
+);
 
 const index = client.initIndex("movies_copy");
 

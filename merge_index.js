@@ -1,6 +1,12 @@
 const algoliasearch = require("algoliasearch");
-const client1 = algoliasearch("8L3BNIKU8L", "28f0da5e7f0be89e03998c16caf3a681");
-const client2 = algoliasearch("PVXYD3XMQP", "6e7c0f06fd1de7cccb6baecf8665b911");
+const client1 = algoliasearch(
+  process.env.ALGOLIA_APP_ID_FABIEN,
+  process.ALGOLIA_ADMIN_API_KEY_FABIEN
+);
+const client2 = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+  process.env.ALGOLIA_ADMIN_API_KEY
+);
 
 const slugify = (string) => {
   if (typeof string !== "string") {
