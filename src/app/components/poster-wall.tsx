@@ -1,5 +1,6 @@
 import { Configure, Hits, Index } from 'react-instantsearch';
 import { Movie } from '../types';
+import { Fragment } from 'react';
 
 const PosterWall = () => {
   return (
@@ -16,9 +17,13 @@ const PosterWall = () => {
           transformStyle: 'preserve-3d',
         }}
       >
-        <div className="flex flex-row flex-wrap h-full w-full relative -top-6 -left-6">
-          <Hits hitComponent={Hit} />
-        </div>
+        <Hits
+          hitComponent={Hit}
+          classNames={{
+            list: 'flex flex-row flex-wrap h-full w-full relative -top-6 -left-6',
+            item: 'w-1/8 h-1/3',
+          }}
+        />
       </div>
     </Index>
   );
@@ -30,7 +35,7 @@ type HitProps = {
 
 function Hit({ hit }: HitProps) {
   return (
-    <div className="w-1/8 h-1/3" key={hit.poster_path}>
+    <Fragment key={hit.poster_path}>
       <img
         src={`https://image.tmdb.org/t/p/w185/${hit.poster_path}`}
         className="w-full h-full object-cover object-top"
@@ -38,7 +43,7 @@ function Hit({ hit }: HitProps) {
           transform: `skew(-15deg)`,
         }}
       />
-    </div>
+    </Fragment>
   );
 }
 
