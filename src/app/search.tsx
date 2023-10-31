@@ -8,12 +8,6 @@ import { Movie } from './types';
 
 const Search = () => {
   const shrink = useShrinkOnScroll(200);
-  const scrollToEnd = () => {
-    window.scrollTo({
-      top: 500,
-      behavior: 'smooth',
-    });
-  };
 
   return (
     <div className="relative">
@@ -34,7 +28,12 @@ const Search = () => {
           submitIconComponent={() => (
             <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
           )}
-          onClick={scrollToEnd}
+          onClick={() => {
+            window.scrollTo({
+              top: 500,
+              behavior: 'smooth',
+            });
+          }}
         />
         <Categories />
       </Index>
