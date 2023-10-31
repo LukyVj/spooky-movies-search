@@ -1,18 +1,29 @@
-import dynamic from "next/dynamic";
+'use client';
 
-const Hero = dynamic(() => import("./components/hero"), {
+import algoliasearch from 'algoliasearch/lite';
+import dynamic from 'next/dynamic';
+import { InstantSearch } from 'react-instantsearch';
+
+const Hero = dynamic(() => import('./components/hero'), {
   ssr: false,
 });
 
-const Search = dynamic(() => import("./search"), {
+const Search = dynamic(() => import('./search'), {
   ssr: false,
 });
+
+const searchClient = algoliasearch(
+  'PVXYD3XMQP',
+  '69636a752c16bee55133304edea993f7'
+);
 
 export default function Home() {
   return (
     <main>
-      <Hero />
-      <Search />
+      <InstantSearch searchClient={searchClient} indexName="horror_movies">
+        <Hero />
+        <Search />
+      </InstantSearch>
     </main>
   );
 }
