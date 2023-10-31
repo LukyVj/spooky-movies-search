@@ -11,6 +11,7 @@ import {
   useRefinementList,
   UseRefinementListProps,
   Highlight,
+  useInstantSearch,
 } from "react-instantsearch";
 import { StarIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { sentenceToColor } from "../helpers";
