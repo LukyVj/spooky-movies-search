@@ -23,6 +23,7 @@ const PosterWall = () => {
             list: 'flex flex-row flex-wrap h-full w-full relative -top-6 -left-6',
             item: 'w-1/8 h-1/3',
           }}
+          transformItems={(hits) => hits.sort(() => Math.random() - 0.5)}
         />
       </div>
     </Index>
