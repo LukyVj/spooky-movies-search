@@ -45,10 +45,10 @@ function Categories() {
   const { results } = useInstantSearch();
   const rawCategories = (results.hits as Movie[]).reduce<
     Record<string, Movie[]>
-  >((categories, curr) => {
-    curr.genres.forEach((category) => {
+  >((categories, movie) => {
+    movie.genres.forEach((category) => {
       // eslint-disable-next-line no-param-reassign
-      (categories[category] ||= []).push(curr);
+      (categories[category] ||= []).push(movie);
     });
 
     return categories;
