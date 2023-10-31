@@ -10,12 +10,13 @@ import {
 } from "react-instantsearch";
 import CustomInfiniteHits from "@/app/components/hits";
 import CustomSearchBox from "./components/searchbox";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   MagnifyingGlassCircleIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { useShrinkOnScroll } from "./hooks/useShrinkOnScroll";
+import { ALGOLIA_INDEX } from "./helpers/algolia";
 
 const searchClient = algoliasearch(
   "PVXYD3XMQP",
@@ -25,13 +26,32 @@ const searchClient = algoliasearch(
 const Search = () => {
   const [query, setQuery] = useState("");
   const shrink = useShrinkOnScroll(200);
-
+  const [allGenres, setAllGenres] = useState<any[]>([]);
   const scrollToEnd = () => {
     window.scrollTo({
       top: document.body.scrollHeight,
       behavior: "smooth",
     });
   };
+
+  const getAllGenres = async () => {
+    const response = await ALGOLIA_INDEX.searchForFacetValues(
+      "genres",
+      "",
+      {}
+    ).then((facet) => {
+      return facet.facetHits;
+    });
+
+    return response;
+  };
+
+  useEffect(() => {
+    getAllGenres().then((data) => {
+      console.log(data);
+      setAllGenres(data);
+    });
+  }, []);
 
   return (
     <div className="relative">
@@ -59,17 +79,15 @@ const Search = () => {
           <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
         </div>
       </div>
-      <InstantSearch searchClient={searchClient} indexName="movies_copy">
-        <Configure query={query} />
+      {allGenres.map((genre) => {
+        return (
+          <InstantSearch searchClient={searchClient} indexName="horror_movies">
+            <Configure query={query} />
 
-        <CustomInfiniteHits title="Movies" genre="Horror" />
-      </InstantSearch>
-
-      <InstantSearch searchClient={searchClient} indexName="movies_copy">
-        <Configure query={query} />
-
-        <CustomInfiniteHits title="Shows" />
-      </InstantSearch>
+            <CustomInfiniteHits title={genre.value} genre={genre.value} />
+          </InstantSearch>
+        );
+      })}
     </div>
   );
 };

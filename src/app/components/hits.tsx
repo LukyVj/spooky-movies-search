@@ -111,13 +111,7 @@ const CustomInfiniteHits = ({
 
   const { query } = useSearchBox();
 
-  const currentType = title === "Movies" ? "movie" : "show";
-
-  const currentFacetFilters =
-    currentType === "show"
-      ? [`record_type: ${currentType}`]
-      : [`genres: ${genre}`, `record_type: ${currentType}`];
-
+  const currentFacetFilters = [`genres: ${genre}`];
   return (
     <div className="mb-8 py-8">
       <header
@@ -128,10 +122,7 @@ const CustomInfiniteHits = ({
 
         <CustomRefinementList attribute="release_year" />
       </header>
-      <CustomConfigure
-        facetFilters={currentFacetFilters}
-        query={currentType === "show" ? "horror" : query}
-      />
+      <CustomConfigure facetFilters={currentFacetFilters} query={query} />
       <RenderHits isLastPage={isLastPage} showMore={showMore} hits={hits} />
     </div>
   );
