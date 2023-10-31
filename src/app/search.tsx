@@ -35,11 +35,9 @@ const Search = () => {
   };
 
   const getAllGenres = async () => {
-    const response = await ALGOLIA_INDEX.searchForFacetValues(
-      "genres",
-      "",
-      {}
-    ).then((facet) => {
+    const response = await ALGOLIA_INDEX.searchForFacetValues("genres", "", {
+      maxFacetHits: 100,
+    }).then((facet) => {
       return facet.facetHits;
     });
 
