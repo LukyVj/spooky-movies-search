@@ -6,5 +6,3 @@ export const searchClient = algoliasearch(
 );
 
 export const indexName = 'horror_movies';
-
-export const ALGOLIA_INDEX = searchClient.initIndex(indexName);
