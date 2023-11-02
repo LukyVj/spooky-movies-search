@@ -112,8 +112,6 @@ const CustomInfiniteHits = ({
     setCurrentHits(hits);
   }, [hits]);
 
-  console.log(setPickedMovie);
-
   return currentHits.length > 0 ? (
     <div className="mb-8 py-8">
       <header

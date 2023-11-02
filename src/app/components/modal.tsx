@@ -1,8 +1,102 @@
+import {
+  BanknotesIcon,
+  EllipsisHorizontalCircleIcon,
+  PlayIcon,
+  StarIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import cx from "classnames";
-import { BanknotesIcon } from "@heroicons/react/20/solid";
-import { Movie } from "../types";
-import useOnClickOutside from "../hooks/useClickOutside";
 import { useRef } from "react";
+
+import useOnClickOutside from "../hooks/useClickOutside";
+import { Movie } from "../types";
+import { VideoWithPreview } from "./video-with-preview";
+import { run } from "node:test";
+
+const Avatar = ({
+  name,
+  profile_path,
+}: {
+  name: string;
+  profile_path: string | null;
+}) => {
+  return (
+    <div className="flex items-center group">
+      <div>
+        <img
+          className="inline-block h-8 w-8 rounded-full object-cover"
+          src={
+            profile_path
+              ? `https://image.tmdb.org/t/p/original/${profile_path}`
+              : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+          }
+          alt=""
+        />
+      </div>
+      <div className="ml-3">
+        <p className="text-sm font-medium text-gray-300 group-hover:text-white">
+          {name}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+type YouTubeVideoProps = {
+  id: string;
+};
+
+export function YouTubeVideo({ id }: YouTubeVideoProps) {
+  return (
+    <VideoWithPreview
+      className="aspect-video w-full rounded"
+      allow="autoplay"
+      src={`//www.youtube.com/embed/${id}?autoplay=1&showinfo=0`}
+      preview={({ status, load }) =>
+        ["idle", "loading"].includes(status) && (
+          <button onClick={() => load()} className="group block">
+            <div className="relative flex aspect-video items-center overflow-hidden rounded text-white">
+              <img
+                src={`//img.youtube.com/vi/${id}/hqdefault.jpg`}
+                className="opacity-80 transition-opacity group-hover:opacity-100"
+                alt="YouTube video preview"
+              />
+              <div className="from-dark-blue absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t opacity-80 transition-opacity group-hover:opacity-70" />
+              <span className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+                {status === "idle" && <PlayIcon className="w-16 h-16" />}
+                {status === "loading" && (
+                  <EllipsisHorizontalCircleIcon className="w-16 h-16 animate-spin" />
+                )}
+              </span>
+            </div>
+          </button>
+        )
+      }
+    />
+  );
+}
+
+const convertRuntime = (runtime: number) => {
+  const hours = Math.floor(runtime / 60);
+  const minutes = runtime % 60;
+
+  return `${hours}h ${minutes}m`;
+};
+
+const convetBudget = (budget: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(budget);
+};
+
+const convertDateToReadable = (date: number) => {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 
 /* Here's the type of Movie
 
@@ -101,10 +195,17 @@ const Modal = ({
     release_year,
   } = data;
 
+  // Column must be up to 3 columns
+  const COLUMNS = {
+    1: "grid-cols-1",
+    2: "grid-cols-2",
+    3: "grid-cols-3",
+  };
+
   return (
     <div
       className={cx(
-        `modal fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 z-50 ${
+        `modal fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-70 z-50 ${
           isOpen ? "block" : "hidden"
         }`
       )}
@@ -112,177 +213,185 @@ const Modal = ({
       aria-modal="true"
     >
       <div
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[rgb(20,20,20)] rounded-lg w-[90%] h-[90%] overflow-scroll scrollbar-hide"
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[rgb(20,20,20)] rounded-lg w-[90%] h-[90%] overflow-scroll scrollbar-hide shadow-lg border-4 border-red-950"
         ref={modalRef}
       >
         <div
-          className="flex flex-col items-center h-full"
+          className="relative flex flex-wrap h-full cover-bottom"
           style={{
             background: `url(https://image.tmdb.org/t/p/w1280/${backdrop_path})no-repeat center center/cover`,
           }}
         >
-          <header className="relative flex h-full cover-bottom">
-            <div className={cx("w-full p-4 h-full", "z-10")}>
-              <img
-                src={`https://image.tmdb.org/t/p/w1280/${poster_path}`}
-                className="w-1/4 object-cover object-bottom"
-              />
-            </div>
-            <div className="w-1/2 justify-end p-4 relative z-20 right-0 text-right">
-              <h2 className="text-3xl font-bold">{title}</h2>
-              <h3 className="text-xl font-bold">{tagline}</h3>
+          <div
+            className={cx(
+              "w-1/3 p-4 h-full flex items-start justify-center",
+              "z-10"
+            )}
+          >
+            <img
+              src={`https://image.tmdb.org/t/p/w1280/${poster_path}`}
+              className=" w-10/12 h-10/12 object-cover object-top ratio-2:3"
+            />
+          </div>
+          <div className="w-2/3 p-4 relative z-20 right-0">
+            <h2 className="text-6xl font-bold mb-2 border-l-8 border-red-700 pl-4">
+              {title}{" "}
+            </h2>
+            <h3 className="text-xl font-bold mb-1">{tagline}</h3>
 
+            <small className="text-gray-400">
+              {convertDateToReadable(release_date)} ({release_year}) — 
+              {convertRuntime(runtime)}
+            </small>
+
+            <div className="flex flex-col">
               {original_title !== title && (
-                <small>Original Title: {original_title}</small>
+                <small>
+                  Original Title: <b>{original_title}</b>
+                </small>
               )}
-              <p className="text-lg text-gray-300">{overview}</p>
+              {original_language && (
+                <small>
+                  Original Language: <b>{original_language}</b>
+                </small>
+              )}
             </div>
-          </header>
+            <p className="text-lg text-gray-300 mt-4">{overview}</p>
 
-          <section className="mt-4 flex p-4">
-            <h2 className="text-2xl font-bold">Cast</h2>
-            <div>
-              <h3 className="text-xl font-bold">Lead</h3>
-              <ul>
-                {cast_lead.map((castMember) => (
-                  <li key={castMember.name}>{castMember.name}</li>
+            <a
+              href={`https://www.themoviedb.org/movie/${objectID.replace(
+                "movie_",
+                ""
+              )}`}
+              className="text-red-700 hover:text-red-600 font-bold mt-4"
+            >
+              See more on TMDB
+            </a>
+
+            <section className="mt-4 py-4 relative z-10">
+              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
+                Genres
+              </h2>
+              <ul className="flex gap-4">
+                {genres.map((genre) => (
+                  <li key={genre}>
+                    <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                      {genre}
+                    </span>
+                  </li>
                 ))}
               </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">Supporting</h3>
+            </section>
+
+            <section className="mt-4 py-4 relative z-10 flex-wrap">
+              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
+                Directors
+              </h2>
               <ul>
-                {cast.map((castMember) => (
-                  <li key={castMember.name}>{castMember.name}</li>
+                {directors.map((director) => (
+                  <li key={director.name}>
+                    <Avatar
+                      name={director.name}
+                      profile_path={director.profile_path}
+                    />
+                  </li>
                 ))}
               </ul>
-            </div>
-          </section>
+            </section>
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Directors</h2>
-            <ul>
-              {directors.map((director) => (
-                <li key={director.name}>{director.name}</li>
-              ))}
-            </ul>
-          </section>
+            <section className="mt-4 py-4 relative z-10 flex-wrap">
+              <h2 className="text-2xl font-bold mb-4 border-l-4 border-red-700 pl-4">
+                Casting
+              </h2>
+              <div>
+                <ul className="flex flex-wrap gap-4">
+                  {cast.map((castMember) => (
+                    <li key={castMember.name}>
+                      <Avatar
+                        name={castMember.name}
+                        profile_path={castMember.profile_path}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Genres</h2>
-            <ul>
-              {genres.map((genre) => (
-                <li key={genre}>{genre}</li>
-              ))}
-            </ul>
-          </section>
+            {/* <section className="mt-4 flex p-4 relative z-10">
+              <h2 className="text-2xl font-bold">Languages</h2>
+              <ul>
+                {spoken_languages.map((language) => (
+                  <li key={language}>{language}</li>
+                ))}
+              </ul>
+            </section> */}
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Languages</h2>
-            <ul>
-              {spoken_languages.map((language) => (
-                <li key={language}>{language}</li>
-              ))}
-            </ul>
-          </section>
+            {videos.length > 0 && (
+              <section className="mt-4 py-4 relative z-10">
+                <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
+                  Trailers
+                </h2>
+                <ul
+                  className={cx(
+                    "grid gap-4",
+                    videos.length >= 3 ? "grid-cols-3" : COLUMNS
+                  )}
+                >
+                  {videos.map((video) => (
+                    <li key={video.name}>
+                      {video.site === "YouTube" && (
+                        <YouTubeVideo id={video.key} />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Videos</h2>
-            <ul>
-              {videos.map((video) => (
-                <li key={video.name}>{video.name}</li>
-              ))}
-            </ul>
-          </section>
+            {/* <section className="mt-4 flex py-4 relative z-10"> */}
+            {/* <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4"> */}
+            {/* Budget */}
+            {/* </h2> */}
+            {/* <div className="flex items-center"> */}
+            {/* <BanknotesIcon className="w-6 h-6 text-red-700" /> */}
+            {/* <span>{convetBudget(budget)}</span> */}
+            {/* </div> */}
+            {/* </section> */}
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Release Date</h2>
-            <time>{release_date}</time>
-          </section>
+            {/* <section className="mt-4 flex py-4 relative z-10"> */}
+            {/* <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4"> */}
+            {/* Popularity */}
+            {/* </h2> */}
+            {/* <span>{popularity}</span> */}
+            {/* </section> */}
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Runtime</h2>
-            <time>{runtime}</time>
-          </section>
+            {/*  <section className="mt-4 flex py-4 relative z-10">
+              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
+                Vote Average
+              </h2>
+            </section> */}
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Budget</h2>
-            <div className="flex items-center">
-              <BanknotesIcon className="w-6 h-6 text-red-700" />
-              <span>{budget}</span>
-            </div>
-          </section>
+            {/* <section className="mt-4 flex py-4 relative z-10">
+              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
+                Vote Count
+              </h2>
+              <span>{vote_count}</span>
+            </section>
 
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Popularity</h2>
-            <span>{popularity}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Vote Average</h2>
-            <span>{vote_average}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Vote Count</h2>
-            <span>{vote_count}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Bayesian Average</h2>
-            <span>{bayesian_avg}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Status</h2>
-            <span>{status}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Tagline</h2>
-            <span>{tagline}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Original Title</h2>
-            <span>{original_title}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Original Language</h2>
-            <span>{original_language}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Collection</h2>
-            <span>{belongs_to_collection?.name}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Popularity Bucketed</h2>
-            <span>{popularity_bucketed}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Record Type</h2>
-            <span>{record_type}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Object ID</h2>
-            <span>{objectID}</span>
-          </section>
-
-          <section className="mt-4 flex p-4 ">
-            <h2 className="text-2xl font-bold">Release Year</h2>
-            <span>{release_year}</span>
-          </section>
+            <section className="mt-4 flex py-4 relative z-10">
+              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
+                Popularity Bucketed
+              </h2>
+              <span>{popularity_bucketed}</span>
+            </section> */}
+          </div>
 
           <button
-            className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+            className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
             onClick={onClose}
           >
-            Close
+            <span className="sr-only">Close</span>
+            <XMarkIcon className="w-6 h-6" />
           </button>
         </div>
       </div>
