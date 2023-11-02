@@ -4,18 +4,17 @@ import {
   PlayIcon,
   StarIcon,
   XMarkIcon,
-} from "@heroicons/react/20/solid";
-import cx from "classnames";
-import { useRef } from "react";
+} from '@heroicons/react/20/solid';
+import cx from 'classnames';
+import { useRef } from 'react';
 
-import useOnClickOutside from "../hooks/useClickOutside";
-import { Movie } from "../types";
-import { VideoWithPreview } from "./video-with-preview";
-import { run } from "node:test";
-import { searchClient } from "../helpers/algolia";
-import { RelatedProducts, useRelatedProducts } from "@algolia/recommend-react";
-import algoliarecommend from "@algolia/recommend";
-import Hit from "./hit";
+import useOnClickOutside from '../hooks/useClickOutside';
+import { Movie } from '../types';
+import { VideoWithPreview } from './video-with-preview';
+import { run } from 'node:test';
+import { searchClient } from '../helpers/algolia';
+import { RelatedProducts, useRelatedProducts } from '@algolia/recommend-react';
+import algoliarecommend from '@algolia/recommend';
 
 const Avatar = ({
   name,
@@ -32,7 +31,7 @@ const Avatar = ({
           src={
             profile_path
               ? `https://image.tmdb.org/t/p/original/${profile_path}`
-              : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+              : 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
           }
           alt=""
         />
@@ -57,7 +56,7 @@ export function YouTubeVideo({ id }: YouTubeVideoProps) {
       allow="autoplay"
       src={`//www.youtube.com/embed/${id}?autoplay=1&showinfo=0`}
       preview={({ status, load }) =>
-        ["idle", "loading"].includes(status) && (
+        ['idle', 'loading'].includes(status) && (
           <button onClick={() => load()} className="group block">
             <div className="relative flex aspect-video items-center overflow-hidden rounded text-white">
               <img
@@ -67,8 +66,8 @@ export function YouTubeVideo({ id }: YouTubeVideoProps) {
               />
               <div className="from-dark-blue absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t opacity-80 transition-opacity group-hover:opacity-70" />
               <span className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-                {status === "idle" && <PlayIcon className="w-16 h-16" />}
-                {status === "loading" && (
+                {status === 'idle' && <PlayIcon className="w-16 h-16" />}
+                {status === 'loading' && (
                   <EllipsisHorizontalCircleIcon className="w-16 h-16 animate-spin" />
                 )}
               </span>
@@ -88,17 +87,17 @@ const convertRuntime = (runtime: number) => {
 };
 
 const convetBudget = (budget: number) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
   }).format(budget);
 };
 
 const convertDateToReadable = (date: number) => {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 };
 
@@ -201,9 +200,9 @@ const Modal = ({
 
   // Column must be up to 3 columns
   const COLUMNS = {
-    1: "grid-cols-1",
-    2: "grid-cols-2",
-    3: "grid-cols-3",
+    1: 'grid-cols-1',
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
   };
 
   const recommendClient = algoliarecommend(
@@ -222,7 +221,7 @@ const Modal = ({
     <div
       className={cx(
         `modal fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-70 z-50 ${
-          isOpen ? "block" : "hidden"
+          isOpen ? 'block' : 'hidden'
         }`
       )}
       role="dialog"
@@ -240,8 +239,8 @@ const Modal = ({
         >
           <div
             className={cx(
-              "w-1/3 p-4 h-full flex items-start justify-center",
-              "z-10"
+              'w-1/3 p-4 h-full flex items-start justify-center',
+              'z-10'
             )}
           >
             <img
@@ -251,7 +250,7 @@ const Modal = ({
           </div>
           <div className="w-2/3 p-4 relative z-20 right-0">
             <h2 className="text-6xl font-bold mb-2 border-l-8 border-red-700 pl-4">
-              {title}{" "}
+              {title}{' '}
             </h2>
             <h3 className="text-xl font-bold mb-1">{tagline}</h3>
 
@@ -276,8 +275,8 @@ const Modal = ({
 
             <a
               href={`https://www.themoviedb.org/movie/${objectID.replace(
-                "movie_",
-                ""
+                'movie_',
+                ''
               )}`}
               className="text-red-700 hover:text-red-600 font-bold mt-4"
             >
@@ -349,13 +348,13 @@ const Modal = ({
                 </h2>
                 <ul
                   className={cx(
-                    "grid gap-4",
-                    videos.length >= 3 ? "grid-cols-3" : COLUMNS
+                    'grid gap-4',
+                    videos.length >= 3 ? 'grid-cols-3' : COLUMNS
                   )}
                 >
                   {videos.map((video) => (
                     <li key={video.name}>
-                      {video.site === "YouTube" && (
+                      {video.site === 'YouTube' && (
                         <YouTubeVideo id={video.key} />
                       )}
                     </li>
