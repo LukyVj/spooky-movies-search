@@ -12,6 +12,10 @@ import useOnClickOutside from "../hooks/useClickOutside";
 import { Movie } from "../types";
 import { VideoWithPreview } from "./video-with-preview";
 import { run } from "node:test";
+import { searchClient } from "../helpers/algolia";
+import { RelatedProducts, useRelatedProducts } from "@algolia/recommend-react";
+import algoliarecommend from "@algolia/recommend";
+import Hit from "./hit";
 
 const Avatar = ({
   name,
@@ -202,6 +206,18 @@ const Modal = ({
     3: "grid-cols-3",
   };
 
+  const recommendClient = algoliarecommend(
+    process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
+    process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
+  );
+
+  // const recommendedMovies = useRelatedProducts({
+  //   indexName: "horror_movies",
+  //   objectIDs: [objectID],
+  //   threshold: 1,
+  //   recommendClient,
+  // });
+
   return (
     <div
       className={cx(
@@ -375,6 +391,7 @@ const Modal = ({
               <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
                 Vote Count
               </h2>
+
               <span>{vote_count}</span>
             </section>
 
@@ -386,13 +403,27 @@ const Modal = ({
             </section> */}
           </div>
 
-          <button
-            className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
-            onClick={onClose}
-          >
-            <span className="sr-only">Close</span>
-            <XMarkIcon className="w-6 h-6" />
-          </button>
+          <div>
+            <header>Recommended Movies</header>
+
+            <div>
+              {/* <ul>
+                {recommendedMovies.map((movie) => (
+                  <li key={movie.objectID}>
+                    <Hit {...movie} />
+                  </li>
+                ))}
+              </ul> */}
+            </div>
+
+            <button
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
+              onClick={onClose}
+            >
+              <span className="sr-only">Close</span>
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
