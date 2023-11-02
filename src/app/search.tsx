@@ -29,6 +29,13 @@ const Search = () => {
   const [query, setQuery] = useState("");
   const shrink = useShrinkOnScroll(200);
   const [allGenres, setAllGenres] = useState<any[]>([]);
+  const [pickedYear, setPickedYear] = useState("");
+  const [pickedGenre, setPickedGenre] = useState("");
+  const [pickedDirector, setPickedDirector] = useState("");
+  const [currentFilters, setCurrentFilters] = useState<any[]>([]);
+
+  const [searchRefined, setSearchRefined] = useState(false);
+
   const scrollToEnd = () => {
     window.scrollTo({
       top: 500,
@@ -52,12 +59,28 @@ const Search = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (pickedGenre !== "") {
+      setSearchRefined(true);
+    } else {
+      setSearchRefined(false);
+    }
+  }, [pickedGenre, pickedDirector]);
+
+  useEffect(() => {
+    setCurrentFilters([
+      `release_year: ${pickedYear}`,
+      pickedGenre !== "" ? `genres: ${pickedGenre}` : ``,
+      pickedDirector !== "" ? `directors.name: ${pickedDirector}` : ``,
+    ]);
+  }, [pickedYear, pickedGenre, pickedDirector]);
+
   return (
-    <>
+    <div className="relative">
       <div
         className={cx(
-          "w-full absolute z-20 flex items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out",
-          shrink ? "-translate-y-64" : "-translate-y-24"
+          "w-full flex items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
+          shrink ? "sticky top-0 py-4" : "-translate-y-24 relative"
         )}
       >
         <div
@@ -78,22 +101,52 @@ const Search = () => {
 
           <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
         </div>
-      </div>
-      <div className="relative">
-        {allGenres.map((genre) => {
-          return (
-            <InstantSearch
-              searchClient={searchClient}
-              indexName="horror_movies"
-            >
-              <Configure query={query} />
+        <CustomRefinementList
+          attribute="release_year"
+          placeholder="Year"
+          onChange={(e) => {
+            setPickedYear(e.target.value);
+          }}
+        />
+        <CustomRefinementList
+          attribute="genres"
+          placeholder="Genre"
+          onChange={(e) => {
+            setPickedGenre(e.target.value);
+          }}
+        />
 
-              <CustomInfiniteHits title={genre.value} genre={genre.value} />
-            </InstantSearch>
-          );
-        })}
+        <CustomRefinementList
+          attribute="directors.name"
+          placeholder="Directors"
+          onChange={(e) => {
+            setPickedDirector(e.target.value);
+          }}
+        />
       </div>
-    </>
+      {searchRefined ? (
+        <InstantSearch searchClient={searchClient} indexName="horror_movies">
+          <Configure query={query} facetFilters={currentFilters} />
+
+          <CustomInfiniteHits title={"All Movies"} />
+        </InstantSearch>
+      ) : (
+        <div className="relative">
+          {allGenres.map((genre) => {
+            return (
+              <InstantSearch
+                searchClient={searchClient}
+                indexName="horror_movies"
+              >
+                <Configure query={query} facetFilters={currentFilters} />
+
+                <CustomInfiniteHits title={genre.value} genre={genre.value} />
+              </InstantSearch>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 

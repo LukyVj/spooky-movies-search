@@ -3,8 +3,15 @@ import {
   type UseRefinementListProps,
 } from "react-instantsearch";
 
-const CustomRefinementList = (props: UseRefinementListProps) => {
+const CustomRefinementList = (
+  props: UseRefinementListProps & {
+    onChange: (e: any) => void;
+    placeholder: string;
+  }
+) => {
   const { items, refine } = useRefinementList(props);
+
+  const { onChange, placeholder }: any = props;
 
   return (
     <div className="ml-4 border-l-4 border-red-700">
@@ -15,13 +22,14 @@ const CustomRefinementList = (props: UseRefinementListProps) => {
         id="genres"
         name="genres"
         className="block w-full pl-3 pr-10 py-2 text-base border-red-700 focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm rounded-md bg-transparent"
-        defaultValue={"Year"}
+        defaultValue={placeholder}
         onChange={(e) => {
           refine(e.target.value);
+          onChange(e);
         }}
       >
         <option value="" selected>
-          Year
+          {placeholder}
         </option>
 
         {items.map((item) => (

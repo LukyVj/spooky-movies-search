@@ -96,12 +96,10 @@ const CustomInfiniteHits = ({
   return currentHits.length > 0 ? (
     <div className="mb-8 py-8">
       <header
-        className="px-8 py-3 flex sticky top-0 z-20"
+        className="px-8 py-3 flex sticky top-0 z-20 border-l-4 border-red-700"
         style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))" }}
       >
         <h2 className="text-2xl font-black pr-4">{title}</h2>
-
-        <CustomRefinementList attribute="release_year" />
       </header>
       <CustomConfigure facetFilters={currentFacetFilters} query={query} />
       <RenderHits
