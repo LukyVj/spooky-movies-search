@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import cx from "classnames";
+import cx from 'classnames';
 import {
   useConfigure,
   useInfiniteHits,
@@ -9,14 +9,14 @@ import {
   useRefinementList,
   UseRefinementListProps,
   useCurrentRefinements,
-} from "react-instantsearch";
+} from 'react-instantsearch';
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
-import React from "react";
-import Hit from "./hit";
-import CustomRefinementList from "./custom-refinement-list";
-import { Movie } from "../types";
+import React from 'react';
+import Hit from './hit';
+import CustomRefinementList from './custom-refinement-list';
+import { Movie } from '../types';
 
 function CustomConfigure(props: UseConfigureProps) {
   useConfigure(props);
@@ -67,8 +67,8 @@ const RenderHits = ({
 
       <ul
         className={cx(
-          "overflow-scroll gap-4 scrollbar-hide",
-          grid ? "grid grid-cols-5" : "flex "
+          'overflow-scroll gap-4 scrollbar-hide',
+          grid ? 'grid grid-cols-5' : 'flex '
         )}
       >
         {hits.map((hit: any) => {
@@ -82,7 +82,7 @@ const RenderHits = ({
             </li>
           );
         })}
-        <li ref={sentinelRef}>{!hitsLoading ? "Loading..." : ""}</li>
+        <li ref={sentinelRef}>{!hitsLoading ? 'Loading...' : ''}</li>
       </ul>
     </div>
   );
@@ -116,7 +116,7 @@ const CustomInfiniteHits = ({
     <div className="mb-8 py-8">
       <header
         className="px-8 py-3 flex sticky top-20 z-20 border-l-4 border-red-700"
-        style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))" }}
+        style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))' }}
       >
         <h2 className="text-2xl font-black pr-4">{title}</h2>
       </header>
