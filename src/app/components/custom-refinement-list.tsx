@@ -14,14 +14,14 @@ const CustomRefinementList = (
   const { onChange, placeholder }: any = props;
 
   return (
-    <div className="ml-4 border-l-4 border-red-700">
+    <div className="h-full mr-4 pr-4 ml-4 border-r-4 border-red-700">
       <label htmlFor="genres" className="sr-only">
         {props.attribute}
       </label>
       <select
         id="genres"
         name="genres"
-        className="block w-full pl-3 pr-10 py-2 text-base border-red-700 focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm rounded-md bg-transparent"
+        className="block w-full h-12 text-base border-red-700 focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm rounded-md bg-transparent"
         defaultValue={placeholder}
         onChange={(e) => {
           refine(e.target.value);

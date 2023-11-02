@@ -1,5 +1,6 @@
 "use client";
 
+import cx from "classnames";
 import {
   useConfigure,
   useInfiniteHits,
@@ -26,9 +27,11 @@ const RenderHits = ({
   isLastPage,
   showMore,
   hits,
+  grid,
 }: {
   isLastPage: boolean;
   showMore: () => void;
+  grid: boolean;
   hits: any;
 }) => {
   const [hitsLoading, setHitsLoading] = useState(true);
@@ -59,7 +62,12 @@ const RenderHits = ({
     <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
       <h2 className="sr-only">Horror Movies List</h2>
 
-      <ul className="flex overflow-scroll gap-4 scrollbar-hide">
+      <ul
+        className={cx(
+          "overflow-scroll gap-4 scrollbar-hide",
+          grid ? "grid grid-cols-5" : "flex "
+        )}
+      >
         {hits.map((hit: any) => {
           return <Hit {...hit} />;
         })}
@@ -72,10 +80,12 @@ const RenderHits = ({
 const CustomInfiniteHits = ({
   genre,
   title,
+  grid = false,
   other,
 }: {
   title: string;
   genre?: string;
+  grid?: boolean;
   [key: string]: any;
 }) => {
   const { hits, isLastPage, showMore } = useInfiniteHits();
@@ -85,10 +95,6 @@ const CustomInfiniteHits = ({
 
   const currentFacetFilters = [`genres: ${genre}`];
 
-  const { items } = useCurrentRefinements();
-
-  console.log(items);
-
   useEffect(() => {
     setCurrentHits(hits);
   }, [hits]);
@@ -96,7 +102,7 @@ const CustomInfiniteHits = ({
   return currentHits.length > 0 ? (
     <div className="mb-8 py-8">
       <header
-        className="px-8 py-3 flex sticky top-0 z-20 border-l-4 border-red-700"
+        className="px-8 py-3 flex sticky top-20 z-20 border-l-4 border-red-700"
         style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))" }}
       >
         <h2 className="text-2xl font-black pr-4">{title}</h2>
@@ -106,9 +112,12 @@ const CustomInfiniteHits = ({
         isLastPage={isLastPage}
         showMore={showMore}
         hits={currentHits}
+        grid={grid}
       />
     </div>
-  ) : null;
+  ) : (
+    <></>
+  );
 };
 
 export default CustomInfiniteHits;

@@ -32,6 +32,7 @@ const Search = () => {
   const [pickedYear, setPickedYear] = useState("");
   const [pickedGenre, setPickedGenre] = useState("");
   const [pickedDirector, setPickedDirector] = useState("");
+  const [pickedActor, setPickedActor] = useState("");
   const [currentFilters, setCurrentFilters] = useState<any[]>([]);
 
   const [searchRefined, setSearchRefined] = useState(false);
@@ -60,20 +61,26 @@ const Search = () => {
   }, []);
 
   useEffect(() => {
-    if (pickedGenre !== "") {
+    if (
+      pickedGenre !== "" ||
+      pickedDirector !== "" ||
+      pickedYear !== "" ||
+      pickedActor !== ""
+    ) {
       setSearchRefined(true);
     } else {
       setSearchRefined(false);
     }
-  }, [pickedGenre, pickedDirector]);
+  }, [pickedGenre, pickedDirector, pickedYear, pickedActor]);
 
   useEffect(() => {
     setCurrentFilters([
       `release_year: ${pickedYear}`,
       pickedGenre !== "" ? `genres: ${pickedGenre}` : ``,
       pickedDirector !== "" ? `directors.name: ${pickedDirector}` : ``,
+      pickedActor !== "" ? `cast.name: ${pickedActor}` : ``,
     ]);
-  }, [pickedYear, pickedGenre, pickedDirector]);
+  }, [pickedYear, pickedGenre, pickedDirector, pickedActor]);
 
   return (
     <div className="relative">
@@ -123,12 +130,20 @@ const Search = () => {
             setPickedDirector(e.target.value);
           }}
         />
+
+        <CustomRefinementList
+          attribute="cast.name"
+          placeholder="Actors"
+          onChange={(e) => {
+            setPickedActor(e.target.value);
+          }}
+        />
       </div>
       {searchRefined ? (
         <InstantSearch searchClient={searchClient} indexName="horror_movies">
           <Configure query={query} facetFilters={currentFilters} />
 
-          <CustomInfiniteHits title={"All Movies"} />
+          <CustomInfiniteHits title={"All Movies"} grid />
         </InstantSearch>
       ) : (
         <div className="relative">
