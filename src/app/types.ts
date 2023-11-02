@@ -43,7 +43,10 @@ export type Director = {
 };
 
 type Video = {
-  // Define the properties of a video if available
+  name: string;
+  site: string;
+  key: string;
+  published_at: number;
 };
 
 type Collection = {

@@ -11,11 +11,12 @@ import {
   useCurrentRefinements,
 } from "react-instantsearch";
 
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 import React from "react";
 import Hit from "./hit";
 import CustomRefinementList from "./custom-refinement-list";
+import { Movie } from "../types";
 
 function CustomConfigure(props: UseConfigureProps) {
   useConfigure(props);
@@ -28,11 +29,13 @@ const RenderHits = ({
   showMore,
   hits,
   grid,
+  setPickedMovie,
 }: {
   isLastPage: boolean;
   showMore: () => void;
   grid: boolean;
   hits: any;
+  setPickedMovie: Dispatch<SetStateAction<Movie | null>>;
 }) => {
   const [hitsLoading, setHitsLoading] = useState(true);
 
@@ -69,7 +72,15 @@ const RenderHits = ({
         )}
       >
         {hits.map((hit: any) => {
-          return <Hit {...hit} />;
+          return (
+            <li
+              key={hit.objectID}
+              className="group relative mr-1 border-2 border-transparent rounded-lg"
+              onClick={() => setPickedMovie(hit)}
+            >
+              <Hit {...hit} />
+            </li>
+          );
         })}
         <li ref={sentinelRef}>{!hitsLoading ? "Loading..." : ""}</li>
       </ul>
@@ -81,11 +92,13 @@ const CustomInfiniteHits = ({
   genre,
   title,
   grid = false,
+  setPickedMovie,
   other,
 }: {
   title: string;
   genre?: string;
   grid?: boolean;
+  setPickedMovie?: Dispatch<SetStateAction<Movie | null>>;
   [key: string]: any;
 }) => {
   const { hits, isLastPage, showMore } = useInfiniteHits();
@@ -98,6 +111,8 @@ const CustomInfiniteHits = ({
   useEffect(() => {
     setCurrentHits(hits);
   }, [hits]);
+
+  console.log(setPickedMovie);
 
   return currentHits.length > 0 ? (
     <div className="mb-8 py-8">
@@ -113,6 +128,7 @@ const CustomInfiniteHits = ({
         showMore={showMore}
         hits={currentHits}
         grid={grid}
+        setPickedMovie={setPickedMovie as any}
       />
     </div>
   ) : (

@@ -19,6 +19,8 @@ import {
 import { useShrinkOnScroll } from "./hooks/useShrinkOnScroll";
 import { ALGOLIA_INDEX } from "./helpers/algolia";
 import CustomRefinementList from "./components/custom-refinement-list";
+import Modal from "./components/modal";
+import { Movie } from "./types";
 
 const searchClient = algoliasearch(
   "PVXYD3XMQP",
@@ -35,14 +37,10 @@ const Search = () => {
   const [pickedActor, setPickedActor] = useState("");
   const [currentFilters, setCurrentFilters] = useState<any[]>([]);
 
-  const [searchRefined, setSearchRefined] = useState(false);
+  const [pickedMovie, setPickedMovie] = useState<Movie | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const scrollToEnd = () => {
-    window.scrollTo({
-      top: 500,
-      behavior: "smooth",
-    });
-  };
+  const [searchRefined, setSearchRefined] = useState(false);
 
   const getAllGenres = async () => {
     const response = await ALGOLIA_INDEX.searchForFacetValues("genres", "", {
@@ -74,6 +72,16 @@ const Search = () => {
   }, [pickedGenre, pickedDirector, pickedYear, pickedActor]);
 
   useEffect(() => {
+    if (pickedMovie !== null) {
+      setModalOpen(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      setModalOpen(false);
+      document.body.style.overflow = "auto";
+    }
+  }, [pickedMovie]);
+
+  useEffect(() => {
     setCurrentFilters([
       `release_year: ${pickedYear}`,
       pickedGenre !== "" ? `genres: ${pickedGenre}` : ``,
@@ -83,84 +91,102 @@ const Search = () => {
   }, [pickedYear, pickedGenre, pickedDirector, pickedActor]);
 
   return (
-    <div className="relative">
-      <div
-        className={cx(
-          "w-full flex items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
-          shrink ? "sticky top-0 py-4" : "-translate-y-24 relative"
-        )}
-      >
+    <div className={cx("relative mih-screen")}>
+      <InstantSearch searchClient={searchClient} indexName="horror_movies">
+        <Modal
+          data={pickedMovie}
+          onClose={() => {
+            setPickedMovie(null);
+          }}
+          isOpen={modalOpen}
+        />
+
         <div
           className={cx(
-            "h-full relative transition-[width] duration-500 ease-in-out",
-            shrink ? "w-1/2" : "w-[420px]"
+            "w-full flex items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
+            shrink ? "sticky top-0 py-4" : "-translate-y-24 relative"
           )}
         >
-          <input
-            type="text"
-            onClick={scrollToEnd}
+          <div
+            className={cx(
+              "h-full relative transition-[width] duration-500 ease-in-out",
+              shrink ? "w-1/2" : "w-[420px]"
+            )}
+          >
+            <input
+              type="text"
+              // onClick={scrollToEnd}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
+              className="w-full h-[50px] bg-black rounded-lg shadow-lg left-0 right-0 mx-auto px-4 py-2 ring ring-red-700 focus:outline-none focus:ring-2 focus:border-4 focus:border-red-950 placeholder-gray-500 text-white text-xl"
+              placeholder="Search for a movie, an actor, director..."
+            />
+
+            <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
+          </div>
+          <CustomRefinementList
+            attribute="release_year"
+            placeholder="Year"
             onChange={(e) => {
-              setQuery(e.target.value);
+              setPickedYear(e.target.value);
             }}
-            className="w-full h-[50px] bg-black rounded-lg shadow-lg left-0 right-0 mx-auto px-4 py-2 ring ring-red-700 focus:outline-none focus:ring-2 focus:border-4 focus:border-red-950 placeholder-gray-500 text-white text-xl"
-            placeholder="Search for a movie, an actor, director..."
+          />
+          <CustomRefinementList
+            attribute="genres"
+            placeholder="Genre"
+            onChange={(e) => {
+              setPickedGenre(e.target.value);
+            }}
           />
 
-          <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
+          <CustomRefinementList
+            attribute="directors.name"
+            placeholder="Directors"
+            onChange={(e) => {
+              setPickedDirector(e.target.value);
+            }}
+          />
+
+          <CustomRefinementList
+            attribute="cast.name"
+            placeholder="Actors"
+            onChange={(e) => {
+              setPickedActor(e.target.value);
+            }}
+          />
         </div>
-        <CustomRefinementList
-          attribute="release_year"
-          placeholder="Year"
-          onChange={(e) => {
-            setPickedYear(e.target.value);
-          }}
-        />
-        <CustomRefinementList
-          attribute="genres"
-          placeholder="Genre"
-          onChange={(e) => {
-            setPickedGenre(e.target.value);
-          }}
-        />
+        {searchRefined ? (
+          <>
+            <Configure query={query} facetFilters={currentFilters} />
 
-        <CustomRefinementList
-          attribute="directors.name"
-          placeholder="Directors"
-          onChange={(e) => {
-            setPickedDirector(e.target.value);
-          }}
-        />
+            <CustomInfiniteHits
+              title={"All Movies"}
+              grid
+              setPickedMovie={setPickedMovie}
+            />
+          </>
+        ) : (
+          <div className="relative">
+            {allGenres.map((genre) => {
+              return (
+                <InstantSearch
+                  searchClient={searchClient}
+                  indexName="horror_movies"
+                >
+                  <Configure query={query} facetFilters={currentFilters} />
 
-        <CustomRefinementList
-          attribute="cast.name"
-          placeholder="Actors"
-          onChange={(e) => {
-            setPickedActor(e.target.value);
-          }}
-        />
-      </div>
-      {searchRefined ? (
-        <InstantSearch searchClient={searchClient} indexName="horror_movies">
-          <Configure query={query} facetFilters={currentFilters} />
-
-          <CustomInfiniteHits title={"All Movies"} grid />
-        </InstantSearch>
-      ) : (
-        <div className="relative">
-          {allGenres.map((genre) => {
-            return (
-              <InstantSearch
-                searchClient={searchClient}
-                indexName="horror_movies"
-              >
-                <Configure query={query} facetFilters={currentFilters} />
-
-                <CustomInfiniteHits title={genre.value} genre={genre.value} />
-              </InstantSearch>
-            );
-          })}
-        </div>
-      )}
+                  <CustomInfiniteHits
+                    title={genre.value}
+                    genre={genre.value}
+                    setPickedMovie={setPickedMovie}
+                  />
+                </InstantSearch>
+              );
+            })}
+          </div>
+        )}
+      </InstantSearch>
     </div>
   );
 };
