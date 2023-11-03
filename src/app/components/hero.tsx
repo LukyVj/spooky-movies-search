@@ -15,8 +15,7 @@ export default function Hero() {
   return (
     <section
       className={cx(
-        "h-[600px] grid place-items-center relative z-10 overflow-hidden transition-height duration-500 ease-in-out",
-        shrink && "shrinked"
+        "h-[600px] grid place-items-center relative z-10 overflow-hidden transition-height duration-500 ease-in-out"
       )}
     >
       <PosterWall />
@@ -32,7 +31,7 @@ export default function Hero() {
         <img
           src="/SpookyMovieSearch.png"
           className={cx(
-            "object-cover object-center transition-all duration-200 ease-in-out w-[300px] md:w-[600px]",
+            "object-cover object-center transition-all duration-500 ease-in-out w-[300px] md:w-[600px]",
             shrink ? "scale-50" : ""
           )}
           alt="Horror Movies Database"

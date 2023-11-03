@@ -239,7 +239,7 @@ const Modal = ({
               className=" w-10/12 h-10/12 object-cover object-top ratio-2:3"
             />
           </div>
-          <div className="w-2/3 p-4 relative z-20 right-0">
+          <div className="w-full md:w-2/3 p-4 relative z-20 right-0">
             <h2 className="text-6xl font-bold mb-2 border-l-8 border-red-700 pl-4">
               {title}{" "}
             </h2>
@@ -275,7 +275,7 @@ const Modal = ({
               TMDB
             </a>
 
-            <div className="flex gap-8">
+            <div className="flex flex-wrap gap-8">
               <section className="mt-4 py-4 relative z-10">
                 <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
                   Ratings
