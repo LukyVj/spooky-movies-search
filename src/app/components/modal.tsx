@@ -1,6 +1,7 @@
 import {
   BanknotesIcon,
   EllipsisHorizontalCircleIcon,
+  LinkIcon,
   PlayIcon,
   StarIcon,
   XMarkIcon,
@@ -25,7 +26,7 @@ const Avatar = ({
   profile_path: string | null;
 }) => {
   return (
-    <div className="flex items-center group">
+    <div className="flex items-center group cursor-pointer">
       <div>
         <img
           className="inline-block h-8 w-8 rounded-full object-cover"
@@ -268,9 +269,10 @@ const Modal = ({
                 "movie_",
                 ""
               )}`}
-              className="text-red-700 hover:text-red-600 font-bold mt-4"
+              className="text-red-100 hover:text-red-200 font-bold p-4 bg-red-700/20 rounded-lg mt-4 inline-block hover:bg-red-700/50"
             >
-              See more on TMDB
+              <LinkIcon className="w-6 h-6 inline-block mr-2" /> See more on
+              TMDB
             </a>
 
             <div className="flex gap-4">
@@ -338,7 +340,7 @@ const Modal = ({
 
             {videos.length > 0 && (
               <section className="mt-4 py-4 relative z-10">
-                <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
+                <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-2">
                   Trailers
                 </h2>
                 <ul className={cx("grid gap-4 grid-cols-4")}>
@@ -359,12 +361,14 @@ const Modal = ({
               recommendClient={recommendClient}
               indexName="horror_movies"
               headerComponent={() => (
-                <h2 className="text-red-700 text-3xl">Recommended Movies</h2>
+                <h2 className="text-red-700 text-3xl font-black">
+                  Recommended Movies
+                </h2>
               )}
               objectIDs={[objectID]}
               itemComponent={({ item }: any) => (
                 <div
-                  className="p-4 cursor-pointer group"
+                  className="cursor-pointer group mt-4"
                   onClick={() => setData(item)}
                 >
                   <img
@@ -380,7 +384,7 @@ const Modal = ({
                     {item.genres.map((genre: string) => (
                       <span
                         key={genre}
-                        className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"
+                        className="inline-flex items-center rounded-md bg-red-700/30 px-2 py-1 text-xs font-medium text-red-200 ring-1 ring-inset ring-red-600/10"
                       >
                         {genre}
                       </span>
@@ -388,13 +392,13 @@ const Modal = ({
                   </div>
                 </div>
               )}
-              maxRecommendations={4}
+              maxRecommendations={6}
               classNames={{
-                list: "grid grid-cols-4",
+                list: "grid grid-cols-6 gap-6",
               }}
             />
             <button
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
+              className="mt-4 bg-red-500/30 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
               onClick={onClose}
             >
               <span className="sr-only">Close</span>

@@ -33,6 +33,16 @@ const searchClient = algoliasearch(
   "69636a752c16bee55133304edea993f7"
 );
 
+function shortenDesc(hit: Movie) {
+  return hit.tagline
+    ? hit.tagline.length > 200
+      ? `${hit.tagline?.substring(0, 100)}...`
+      : hit.tagline
+    : hit.overview!.length > 200
+    ? `${hit.overview?.substring(0, 100)}...`
+    : hit.overview;
+}
+
 export default function Home() {
   return (
     <InstantSearch searchClient={searchClient} indexName={indexName}>
@@ -60,10 +70,7 @@ function Search() {
 
     window.addEventListener("scroll", (e) => {
       // Stop listening when the scroll value is over 600
-      if (
-        headerRef.current &&
-        headerRef.current.getBoundingClientRect().top < 0
-      ) {
+      if (headerRef.current) {
         setHeaderSize(headerRef.current!.getBoundingClientRect().height);
       }
     });
@@ -103,14 +110,16 @@ function Search() {
           <div
             className={cx(
               "w-full flex flex-wrap items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
-              shrink ? "sticky top-0 py-4" : "-translate-y-24 relative"
+              shrink
+                ? "sticky grid grid-cols-2 top-0 py-4"
+                : "-translate-y-24 relative"
             )}
             ref={headerRef}
           >
             <div
               className={cx(
-                "h-full relative transition-[width] duration-500 ease-in-out",
-                shrink ? "w-1/2" : "w-[420px]"
+                "h-full relative ease-in-out pl-8",
+                shrink ? "w-full" : "w-[420px]"
               )}
             >
               <SearchBox
@@ -128,15 +137,24 @@ function Search() {
 
               <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
             </div>
-            <CustomRefinementList attribute="release_year" placeholder="Year" />
-            <CustomRefinementList attribute="genres" placeholder="Genre" />
 
-            <CustomRefinementList
-              attribute="directors.name"
-              placeholder="Directors"
-            />
+            <div className={cx(shrink ? "flex justify-end" : "hidden")}>
+              <CustomRefinementList
+                attribute="release_year"
+                placeholder="Year"
+              />
+              <CustomRefinementList attribute="genres" placeholder="Genre" />
 
-            <CustomRefinementList attribute="cast.name" placeholder="Actors" />
+              <CustomRefinementList
+                attribute="directors.name"
+                placeholder="Directors"
+              />
+
+              <CustomRefinementList
+                attribute="cast.name"
+                placeholder="Actors"
+              />
+            </div>
 
             <div className="flex w-full">
               <CustomCurrentRefinements />
@@ -204,15 +222,14 @@ type AllMoviesProps = {
 function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
-  console.log(onSelect);
   return (
     <div className="mb-8 py-8">
-      <MoviesHeading headerHeight={headerHeight}>All Movies</MoviesHeading>
+      {/* <MoviesHeading headerHeight={headerHeight}>All Movies</MoviesHeading> */}
 
       <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
         <h2 className="sr-only">Horror Movies List</h2>
 
-        <ul className="overflow-scroll gap-4 scrollbar-hide grid grid-cols-5">
+        <ul className="overflow-scroll gap-4 scrollbar-hide flex">
           {hits.map((hit) => {
             return (
               <li key={hit.objectID} onClick={() => onSelect?.(hit)}>
@@ -220,10 +237,12 @@ function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
               </li>
             );
           })}
+          <li>
+            {" "}
+            <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
+          </li>
         </ul>
       </div>
-
-      <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
     </div>
   );
 }
@@ -277,8 +296,6 @@ type MovieCategoryProps = {
 function MovieCategory({ onSelect }: MovieCategoryProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
-  console.log(onSelect);
-
   return (
     <ul className="overflow-scroll gap-4 scrollbar-hide flex">
       {hits.map((hit) => {
@@ -286,7 +303,6 @@ function MovieCategory({ onSelect }: MovieCategoryProps) {
           <li
             key={hit.objectID}
             onClick={() => {
-              console.log("click");
               onSelect?.(hit);
             }}
           >
@@ -312,8 +328,8 @@ function MovieItem({ hit }: MovieItemProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cx(
-          "cover relative h-[320px] aspect-h-1 aspect-w-1 overflow-hidden group-hover:opacity-75 p-4 transition-[width] ease-in-out",
-          isHovered ? "w-[600px]" : "w-auto"
+          "relative h-[320px] aspect-h-1 aspect-w-1 overflow-hidden group-hover:opacity-75 p-4 transition-transform ease-in-out",
+          isHovered ? "scale-110" : ""
         )}
         style={{
           background: `url(https://www.themoviedb.org/t/p/w1280/${hit.backdrop_path}no-repeat center center/cover`,
@@ -321,20 +337,20 @@ function MovieItem({ hit }: MovieItemProps) {
       >
         <div className="relative z-10 flex">
           <img
-            src={`https://www.themoviedb.org/t/p/w1280/${hit.poster_path}`}
-            alt={`https://www.themoviedb.org/t/p/w1280/${hit.poster_path}`}
-            className="h-72 object-cover object-center rounded-lg"
+            src={`https://www.themoviedb.org/t/p/w342/${hit.poster_path}`}
+            alt={`https://www.themoviedb.org/t/p/w342/${hit.poster_path}`}
+            className="h-72 object-cover object-center rounded-lg shadow-lg shadow-black"
             loading="lazy"
             style={{ minWidth: "200px" }}
           />
 
           {isHovered && (
-            <div className="pb-4 pt-10 text-center p-4 sm:p-6 bottom-0 flex flex-col grow overflow-hidden">
+            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/70 flex flex-col grow  h-full justify-between">
               {/* The following div must appear once the mouse is hovered with a delay */}
               <div
                 className={cx(
                   "inset-0 transition-all ease-in-out",
-                  "hidden group-hover:block"
+                  "hidden group-hover:flex flex-col grow justify-between"
                 )}
                 style={{
                   transitionDelay: "500ms",
@@ -344,12 +360,8 @@ function MovieItem({ hit }: MovieItemProps) {
                   <span aria-hidden="true" className="absolute inset-0" />
                   <Highlight attribute="title" hit={hit} />
                 </h3>
-                <p className="mt-1 text-sm text-gray-300">
-                  {hit.overview?.split(" ").slice(0, 30).join(" ") + "..."}
-                </p>
+                <p className="mt-1 text-sm text-gray-300">{shortenDesc(hit)}</p>
                 <div className="mt-3 flex items-center flex-col">
-                  <p className="text-sm text-gray-300">{hit.release_year}</p>
-                  <p className="">{hit.vote_average / 2 - 1} out of 5 stars</p>
                   <div className="flex items-center">
                     {[0, 1, 2, 3, 4].map((rating) => (
                       <StarIcon
@@ -364,13 +376,7 @@ function MovieItem({ hit }: MovieItemProps) {
                       />
                     ))}
                   </div>
-                  <p className="mt-1 text-sm text-gray-300">
-                    {hit.vote_count} votes
-                  </p>
                 </div>
-                <p className="mt-4 text-base font-medium text-gray-300">
-                  {hit.popularity} popularity
-                </p>
               </div>
             </div>
           )}

@@ -12,20 +12,20 @@ const CustomCurrentRefinements = (props: UseCurrentRefinementsProps) => {
   const tagColor = (label: string) => {
     switch (label) {
       case "genres":
-        return "bg-blue-50 text-blue-700";
+        return "bg-blue-500/20 white";
       case "release_year":
-        return "bg-green-50 text-green-700";
+        return "bg-green-500/20 white";
       case "director":
-        return "bg-yellow-50 text-yellow-700";
+        return "bg-yellow-500/20 white";
       case "actor":
-        return "bg-purple-50 text-purple-700";
+        return "bg-purple-500/20 white";
       default:
-        return "bg-red-50 text-red-700";
+        return "bg-red-500/20 white";
     }
   };
 
   return (
-    <ul>
+    <ul className="flex py-4 px-8">
       {items.map((item) => (
         <li key={[item.indexName, item.label].join("/")}>
           {/* <span>{item.label}:</span> */}
@@ -33,7 +33,7 @@ const CustomCurrentRefinements = (props: UseCurrentRefinementsProps) => {
             <span
               key={refinement.label}
               className={cx(
-                "inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium ring-1 ring-inset ring-red-600/10",
+                "inline-flex items-center rounded-md px-2 py-1 mr-2 text-xs font-medium ring-1 ring-inset ring-red-600/10",
                 tagColor(item.label)
               )}
             >
