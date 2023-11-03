@@ -219,18 +219,18 @@ const Modal = ({
       aria-modal="true"
     >
       <div
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[rgb(20,20,20)] rounded-lg w-[90%] h-[90%] overflow-scroll scrollbar-hide shadow-lg border-4 border-red-950"
+        className="w-full h-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[rgb(20,20,20)] rounded-lg md:w-[90%] md:h-[90%] overflow-scroll scrollbar-hide shadow-lg border-4 border-red-950"
         ref={modalRef}
       >
         <div
-          className="relative flex flex-wrap h-full cover-bottom"
+          className="relative flex flex-wrap h-full cover-bottom py-12"
           style={{
             background: `url(https://image.tmdb.org/t/p/w1280/${backdrop_path})no-repeat center center/cover`,
           }}
         >
           <div
             className={cx(
-              "w-1/3 p-4 h-full flex items-start justify-center",
+              "hidden md:block w-1/3 p-4 h-full flex items-start justify-center",
               "z-10"
             )}
           >
@@ -275,7 +275,29 @@ const Modal = ({
               TMDB
             </a>
 
-            <div className="flex gap-4">
+            <div className="flex gap-8">
+              <section className="mt-4 py-4 relative z-10">
+                <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
+                  Ratings
+                </h2>
+
+                <ul className="flex">
+                  {[0, 1, 2, 3, 4].map((rating) => (
+                    <li key={rating}>
+                      <StarIcon
+                        className={cx(
+                          vote_average / 2 - 1 > rating
+                            ? "text-yellow-400"
+                            : "text-gray-200",
+                          "h-5 w-5 flex-shrink-0"
+                        )}
+                        aria-hidden="true"
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
               <section className="mt-4 py-4 relative z-10">
                 <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
                   Genres
@@ -356,7 +378,7 @@ const Modal = ({
             )}
           </div>
 
-          <div className="p-12">
+          <div className="p-4 md:p-12">
             <RelatedProducts
               recommendClient={recommendClient}
               indexName="horror_movies"
@@ -394,7 +416,7 @@ const Modal = ({
               )}
               maxRecommendations={6}
               classNames={{
-                list: "grid grid-cols-6 gap-6",
+                list: "grid grid-cols-2 md:grid-cols-6 gap-6",
               }}
             />
             <button

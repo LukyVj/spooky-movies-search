@@ -52,7 +52,7 @@ export default function Home() {
 }
 
 function Search() {
-  const shrink = useShrinkOnScroll(200);
+  const shrink = useShrinkOnScroll(500);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerSize, setHeaderSize] = useState(0);
@@ -109,21 +109,23 @@ function Search() {
 
           <div
             className={cx(
-              "w-full flex flex-wrap items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
+              "w-full items-center justify-center bottom-0 left-0 duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg",
               shrink
-                ? "sticky grid grid-cols-2 top-0 py-4"
-                : "-translate-y-24 relative"
+                ? "sticky grid md:grid-cols-2 top-0 py-4 bg-black bg-opacity-5"
+                : "relative flex flex-wrap"
             )}
             ref={headerRef}
           >
             <div
               className={cx(
-                "h-full relative ease-in-out pl-8",
-                shrink ? "w-full" : "w-[420px]"
+                "h-full relative ease-in-out md:pl-8",
+                shrink ? "md:w-full" : "md:w-[420px]"
               )}
             >
               <SearchBox
-                className="w-full h-[50px] bg-black rounded-lg shadow-lg left-0 right-0 mx-auto px-4 py-2 ring ring-red-700 focus:outline-none focus:ring-2 focus:border-4 focus:border-red-950 placeholder-gray-500 text-white text-xl"
+                className={cx(
+                  "h-[50px] bg-black rounded-lg shadow-lg left-0 right-0 mx-auto px-4 py-2 ring ring-red-700 focus:outline-none focus:ring-2 focus:border-4 focus:border-red-950 placeholder-gray-500 text-white text-xl"
+                )}
                 classNames={{
                   input:
                     "bg-transparent w-full border-0 ring-0 focus:ring-0 outline-none",
@@ -135,10 +137,12 @@ function Search() {
                 placeholder="Search for a movie, an actor, director…"
               />
 
-              <MagnifyingGlassIcon className="w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
+              <MagnifyingGlassIcon className="hidden md:block w-6 h-6 text-red-700 absolute right-4 top-1/2 transform -translate-y-1/2" />
             </div>
 
-            <div className={cx(shrink ? "flex justify-end" : "hidden")}>
+            <div
+              className={cx(shrink ? "hidden md:flex justify-end" : "hidden")}
+            >
               <CustomRefinementList
                 attribute="release_year"
                 placeholder="Year"
@@ -337,15 +341,15 @@ function MovieItem({ hit }: MovieItemProps) {
       >
         <div className="relative z-10 flex">
           <img
-            src={`https://www.themoviedb.org/t/p/w342/${hit.poster_path}`}
-            alt={`https://www.themoviedb.org/t/p/w342/${hit.poster_path}`}
+            src={`https://www.themoviedb.org/t/p/w154/${hit.poster_path}`}
+            alt={`https://www.themoviedb.org/t/p/w154/${hit.poster_path}`}
             className="h-72 object-cover object-center rounded-lg shadow-lg shadow-black"
             loading="lazy"
             style={{ minWidth: "200px" }}
           />
 
           {isHovered && (
-            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/80 flex flex-col grow w-full h-full justify-between">
+            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/80 flex flex-col grow w-full h-full justify-between py-4 rounded-md">
               {/* The following div must appear once the mouse is hovered with a delay */}
               <div
                 className={cx(
@@ -356,7 +360,7 @@ function MovieItem({ hit }: MovieItemProps) {
                   transitionDelay: "500ms",
                 }}
               >
-                <h3 className="text-2xl font-medium text-gray-100">
+                <h3 className="text-xl font-medium text-gray-100">
                   <span aria-hidden="true" className="absolute inset-0" />
                   <Highlight attribute="title" hit={hit} />
                 </h3>
@@ -393,7 +397,7 @@ type MoviesHeadingProps = React.PropsWithChildren & {
 function MoviesHeading({ children, headerHeight }: MoviesHeadingProps) {
   return (
     <header
-      className="px-8 py-3 flex sticky z-20 border-l-4 border-red-700 ml-8"
+      className="px-8 py-3 flex sticky z-20 border-l-4 border-red-700 ml-4 md:ml-8"
       style={{
         filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))",
         top: headerHeight,
@@ -415,7 +419,10 @@ const LoadingIndicator = forwardRef(function LoadingIndicator(
   return (
     <div
       ref={ref as React.ForwardedRef<HTMLDivElement>}
-      className="flex flex-col items-center justify-center px-16 h-72 bg-black rounded-lg shadow-lg shadow-black animate-pulse transition-all duration-500 ease-in-out"
+      className={cx(
+        isLoading &&
+          "flex flex-col items-center justify-center px-16 h-72 bg-black rounded-lg shadow-lg shadow-black animate-pulse transition-all duration-500 ease-in-out"
+      )}
     >
       {isLoading ? "Loading..." : ""}
     </div>
