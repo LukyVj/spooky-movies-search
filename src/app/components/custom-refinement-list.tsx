@@ -1,17 +1,23 @@
 import {
+  useClearRefinements,
   useRefinementList,
   type UseRefinementListProps,
-} from "react-instantsearch";
+} from 'react-instantsearch';
 
-const CustomRefinementList = (
-  props: UseRefinementListProps & {
-    onChange: (e: any) => void;
-    placeholder: string;
-  }
-) => {
+type CustomRefinementListProps = UseRefinementListProps & {
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  placeholder: string;
+};
+
+const CustomRefinementList = ({
+  onChange,
+  placeholder,
+  ...props
+}: CustomRefinementListProps) => {
   const { items, refine } = useRefinementList(props);
-
-  const { onChange, placeholder }: any = props;
+  const { refine: clear } = useClearRefinements({
+    includedAttributes: [props.attribute],
+  });
 
   return (
     <div className="h-full mr-4 pr-4 ml-4 border-r-4 border-red-700">
@@ -23,9 +29,15 @@ const CustomRefinementList = (
         name="genres"
         className="block w-full h-12 text-base border-red-700 focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm rounded-md bg-transparent"
         defaultValue={placeholder}
-        onChange={(e) => {
-          refine(e.target.value);
-          onChange(e);
+        onChange={(event) => {
+          const { value } = event.target;
+
+          if (value) {
+            refine(value);
+          } else {
+            clear();
+          }
+          onChange?.(event);
         }}
       >
         <option value="" selected>

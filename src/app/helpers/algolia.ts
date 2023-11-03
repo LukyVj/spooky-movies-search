@@ -1,8 +1,8 @@
-import algoliasearch from "algoliasearch";
+import algoliasearch from 'algoliasearch';
 
 export const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
 );
 
-export const ALGOLIA_INDEX = searchClient.initIndex("horror_movies");
+export const indexName = 'horror_movies';

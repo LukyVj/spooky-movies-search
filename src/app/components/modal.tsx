@@ -13,10 +13,8 @@ import { Movie } from "../types";
 import { VideoWithPreview } from "./video-with-preview";
 import { run } from "node:test";
 import { searchClient } from "../helpers/algolia";
-import { relatedProducts } from "@algolia/recommend-js";
+import { RelatedProducts, useRelatedProducts } from "@algolia/recommend-react";
 import algoliarecommend from "@algolia/recommend";
-import Hit from "./hit";
-import { RelatedProducts } from "@algolia/recommend-react";
 
 const Avatar = ({
   name,
@@ -207,25 +205,25 @@ const Modal = ({
     3: "grid-cols-3",
   };
 
-  const recommendClient = algoliarecommend(
-    process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-    process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
-  );
+  // const recommendClient = algoliarecommend(
+  //   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
+  //   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
+  // );
 
-  const recommendedMovies = relatedProducts({
-    objectIDs: ["movie_520763"],
-    recommendClient,
-    indexName: "horror_movies",
-    itemComponent({ item }) {
-      return (
-        <pre>
-          <code>{JSON.stringify(item)}</code>
-        </pre>
-      );
-    },
-  });
+  // const recommendedMovies = relatedProducts({
+  //   objectIDs: ["movie_520763"],
+  //   recommendClient,
+  //   indexName: "horror_movies",
+  //   itemComponent({ item }) {
+  //     return (
+  //       <pre>
+  //         <code>{JSON.stringify(item)}</code>
+  //       </pre>
+  //     );
+  //   },
+  // });
 
-  console.log(recommendedMovies);
+  // console.log(recommendedMovies);
 
   return (
     <div
@@ -413,7 +411,7 @@ const Modal = ({
           </div>
 
           <div>
-            <RelatedProducts
+            {/* <RelatedProducts
               recommendClient={recommendClient}
               indexName="horror_movies"
               headerComponent={() => <h2>Recommended Movies</h2>}
@@ -427,7 +425,7 @@ const Modal = ({
               classNames={{
                 list: "flex flex-wrap gap-4",
               }}
-            />
+            /> */}
             <button
               className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
               onClick={onClose}
