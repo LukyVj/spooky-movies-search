@@ -12,7 +12,7 @@ import {
   useHits,
 } from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { Movie } from "./types";
 import cx from "classnames";
 import Modal from "./components/modal";
@@ -21,6 +21,8 @@ import { MagnifyingGlassIcon, StarIcon } from "@heroicons/react/20/solid";
 import CustomRefinementList from "./components/custom-refinement-list";
 import { useInfinitelyScrolledHits } from "./hooks/useInfinitelyScrolledHits";
 import { indexName } from "./helpers/algolia";
+import AlgoliaLogo from "@/app/icons/algolia";
+import CustomCurrentRefinements from "./components/custom-current-refinement";
 
 const Hero = dynamic(() => import("./components/hero"), {
   ssr: false,
@@ -42,6 +44,26 @@ export default function Home() {
 function Search() {
   const shrink = useShrinkOnScroll(200);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerSize, setHeaderSize] = useState(0);
+
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderSize(headerRef.current.getBoundingClientRect().height);
+    }
+
+    window.addEventListener("resize", () => {
+      if (headerRef.current) {
+        setHeaderSize(headerRef.current!.getBoundingClientRect().height);
+      }
+    });
+
+    return () => {
+      window.removeEventListener("resize", () => {
+        setHeaderSize(headerRef?.current!.getBoundingClientRect().height);
+      });
+    };
+  }, [headerRef.current]);
 
   useEffect(() => {
     if (selectedMovie) {
@@ -70,6 +92,7 @@ function Search() {
               "w-full flex flex-wrap items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
               shrink ? "sticky top-0 py-4" : "-translate-y-24 relative"
             )}
+            ref={headerRef}
           >
             <div
               className={cx(
@@ -96,42 +119,74 @@ function Search() {
             <CustomRefinementList attribute="cast.name" placeholder="Actors" />
 
             <div className="flex w-full">
-              <CurrentRefinements />
+              <CustomCurrentRefinements />
             </div>
           </div>
-          <MoviesList onSelect={setSelectedMovie} />
+          <MoviesList onSelect={setSelectedMovie} headerHeight={headerSize} />
         </div>
       </Index>
+      <footer>
+        <div className="mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8 bg-black text-center">
+          <p>
+            Made with{" "}
+            <a href="https://www.algolia.com/" className="text-red-500">
+              Algolia
+            </a>
+            ,{" "}
+            <a href="https://nextjs.org/" className="text-red-500">
+              Next.js
+            </a>{" "}
+            &{" "}
+            <a href="https://vercel.com/" className="text-red-500">
+              Vercel
+            </a>
+            .
+          </p>
+          <p>
+            Data from{" "}
+            <a href="https://www.themoviedb.org/" className="text-red-500">
+              The Movie Database
+            </a>
+            .
+          </p>
+
+          <a href="https://algolia.com">
+            <AlgoliaLogo className="w-40 mt-12 h-auto m-auto text-red-600" />
+          </a>
+        </div>
+      </footer>
     </main>
   );
 }
 
 type MoviesListProps = {
   onSelect?(hit: Movie): void;
+  headerHeight?: number;
 };
 
-function MoviesList({ onSelect }: MoviesListProps) {
+function MoviesList({ onSelect, headerHeight }: MoviesListProps) {
   const { items } = useCurrentRefinements();
 
   const isRefined = items.length > 0;
 
   return isRefined ? (
-    <AllMovies onSelect={onSelect} />
+    <AllMovies onSelect={onSelect} headerHeight={headerHeight} />
   ) : (
-    <CategorizedMovies onSelect={onSelect} />
+    <CategorizedMovies onSelect={onSelect} headerHeight={headerHeight} />
   );
 }
 
 type AllMoviesProps = {
   onSelect?(hit: Movie): void;
+  headerHeight?: number;
 };
 
-function AllMovies({ onSelect }: AllMoviesProps) {
+function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
   return (
     <div className="mb-8 py-8">
-      <MoviesHeading>All Movies</MoviesHeading>
+      <MoviesHeading headerHeight={headerHeight}>All Movies</MoviesHeading>
 
       <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
         <h2 className="sr-only">Horror Movies List</h2>
@@ -144,18 +199,19 @@ function AllMovies({ onSelect }: AllMoviesProps) {
               </li>
             );
           })}
-          <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
         </ul>
       </div>
+      <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
     </div>
   );
 }
 
 type CategorizedMoviesProps = {
   onSelect?(hit: Movie): void;
+  headerHeight?: number;
 };
 
-function CategorizedMovies({ onSelect }: CategorizedMoviesProps) {
+function CategorizedMovies({ onSelect, headerHeight }: CategorizedMoviesProps) {
   const { hits } = useHits();
 
   const rawCategories = hits.reduce<Record<string, Movie[]>>(
@@ -178,7 +234,7 @@ function CategorizedMovies({ onSelect }: CategorizedMoviesProps) {
     <div className="relative">
       {categories.map((category) => (
         <div className="mb-8 py-8" key={category}>
-          <MoviesHeading>{category}</MoviesHeading>
+          <MoviesHeading headerHeight={headerHeight}>{category}</MoviesHeading>
 
           <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
             <Index indexName={indexName}>
@@ -294,13 +350,18 @@ function MovieItem({ hit }: MovieItemProps) {
   );
 }
 
-type MoviesHeadingProps = React.PropsWithChildren;
+type MoviesHeadingProps = React.PropsWithChildren & {
+  headerHeight?: number;
+};
 
-function MoviesHeading({ children }: MoviesHeadingProps) {
+function MoviesHeading({ children, headerHeight }: MoviesHeadingProps) {
   return (
     <header
-      className="px-8 py-3 flex sticky top-20 z-20 border-l-4 border-red-700"
-      style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))" }}
+      className="px-8 py-3 flex sticky z-20 border-l-4 border-red-700"
+      style={{
+        filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))",
+        top: headerHeight,
+      }}
     >
       <h2 className="text-2xl font-black pr-4">{children}</h2>
     </header>
