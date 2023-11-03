@@ -345,7 +345,7 @@ function MovieItem({ hit }: MovieItemProps) {
           />
 
           {isHovered && (
-            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/70 flex flex-col grow w-full h-full justify-between">
+            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/80 flex flex-col grow w-full h-full justify-between">
               {/* The following div must appear once the mouse is hovered with a delay */}
               <div
                 className={cx(
