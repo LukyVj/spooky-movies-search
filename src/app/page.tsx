@@ -1,31 +1,33 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import {
+  Configure,
+  CurrentRefinements,
   Highlight,
   Index,
   InstantSearch,
   SearchBox,
   useCurrentRefinements,
-} from 'react-instantsearch';
-import algoliasearch from 'algoliasearch/lite';
-import { forwardRef, useState } from 'react';
-import { Movie } from './types';
-import cx from 'classnames';
-import Modal from './components/modal';
-import { useShrinkOnScroll } from './hooks/useShrinkOnScroll';
-import { MagnifyingGlassIcon, StarIcon } from '@heroicons/react/20/solid';
-import CustomRefinementList from './components/custom-refinement-list';
-import { useInfinitelyScrolledHits } from './hooks/useInfinitelyScrolledHits';
-import { indexName } from './helpers/algolia';
+} from "react-instantsearch";
+import algoliasearch from "algoliasearch/lite";
+import { forwardRef, useEffect, useState } from "react";
+import { Movie } from "./types";
+import cx from "classnames";
+import Modal from "./components/modal";
+import { useShrinkOnScroll } from "./hooks/useShrinkOnScroll";
+import { MagnifyingGlassIcon, StarIcon } from "@heroicons/react/20/solid";
+import CustomRefinementList from "./components/custom-refinement-list";
+import { useInfinitelyScrolledHits } from "./hooks/useInfinitelyScrolledHits";
+import { indexName } from "./helpers/algolia";
 
-const Hero = dynamic(() => import('./components/hero'), {
+const Hero = dynamic(() => import("./components/hero"), {
   ssr: false,
 });
 
 const searchClient = algoliasearch(
-  'PVXYD3XMQP',
-  '69636a752c16bee55133304edea993f7'
+  "PVXYD3XMQP",
+  "69636a752c16bee55133304edea993f7"
 );
 
 export default function Home() {
@@ -40,15 +42,22 @@ function Search() {
   const shrink = useShrinkOnScroll(200);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const isRefined = false;
+  useEffect(() => {
+    if (selectedMovie) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [selectedMovie]);
 
   return (
     <main>
       <Hero />
       <Index indexName={indexName}>
-        <div className={cx('relative mih-screen')}>
+        <div className={cx("relative mih-screen")}>
           <Modal
             data={selectedMovie}
+            setData={setSelectedMovie}
             onClose={() => {
               setSelectedMovie(null);
             }}
@@ -57,19 +66,19 @@ function Search() {
 
           <div
             className={cx(
-              'w-full flex items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5',
-              shrink ? 'sticky top-0 py-4' : '-translate-y-24 relative'
+              "w-full flex flex-wrap items-center justify-center bottom-0 left-0 transition-all duration-500 ease-in-out z-30 backdrop-filter backdrop-blur-lg bg-black bg-opacity-5",
+              shrink ? "sticky top-0 py-4" : "-translate-y-24 relative"
             )}
           >
             <div
               className={cx(
-                'h-full relative transition-[width] duration-500 ease-in-out',
-                shrink ? 'w-1/2' : 'w-[420px]'
+                "h-full relative transition-[width] duration-500 ease-in-out",
+                shrink ? "w-1/2" : "w-[420px]"
               )}
             >
               <SearchBox
                 className="w-full h-[50px] bg-black rounded-lg shadow-lg left-0 right-0 mx-auto px-4 py-2 ring ring-red-700 focus:outline-none focus:ring-2 focus:border-4 focus:border-red-950 placeholder-gray-500 text-white text-xl"
-                classNames={{ input: 'bg-transparent w-full' }}
+                classNames={{ input: "bg-transparent w-full" }}
                 placeholder="Search for a movie, an actor, director…"
               />
 
@@ -84,6 +93,10 @@ function Search() {
             />
 
             <CustomRefinementList attribute="cast.name" placeholder="Actors" />
+
+            <div className="flex w-full">
+              <CurrentRefinements />
+            </div>
           </div>
           <MoviesList onSelect={setSelectedMovie} />
         </div>
@@ -179,7 +192,9 @@ function CategorizedMovies({ onSelect }: CategorizedMoviesProps) {
           </div>
         </div>
       ))}
-      <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
+      <div className="bg-red-700 p-8">
+        <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
+      </div>
     </div>
   );
 }
@@ -197,8 +212,8 @@ function MovieItem({ hit }: MovieItemProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cx(
-          'cover relative h-[320px] aspect-h-1 aspect-w-1 overflow-hidden group-hover:opacity-75 p-4 transition-[width] ease-in-out',
-          isHovered ? 'w-[600px]' : 'w-auto'
+          "cover relative h-[320px] aspect-h-1 aspect-w-1 overflow-hidden group-hover:opacity-75 p-4 transition-[width] ease-in-out",
+          isHovered ? "w-[600px]" : "w-auto"
         )}
         style={{
           background: `url(https://www.themoviedb.org/t/p/w1280/${hit.backdrop_path}no-repeat center center/cover`,
@@ -210,7 +225,7 @@ function MovieItem({ hit }: MovieItemProps) {
             alt={`https://www.themoviedb.org/t/p/w1280/${hit.poster_path}`}
             className="h-72 object-cover object-center rounded-lg"
             loading="lazy"
-            style={{ minWidth: '200px' }}
+            style={{ minWidth: "200px" }}
           />
 
           {isHovered && (
@@ -218,11 +233,11 @@ function MovieItem({ hit }: MovieItemProps) {
               {/* The following div must appear once the mouse is hovered with a delay */}
               <div
                 className={cx(
-                  'inset-0 transition-all ease-in-out',
-                  'hidden group-hover:block'
+                  "inset-0 transition-all ease-in-out",
+                  "hidden group-hover:block"
                 )}
                 style={{
-                  transitionDelay: '500ms',
+                  transitionDelay: "500ms",
                 }}
               >
                 <h3 className="text-2xl font-medium text-gray-100">
@@ -230,7 +245,7 @@ function MovieItem({ hit }: MovieItemProps) {
                   <Highlight attribute="title" hit={hit} />
                 </h3>
                 <p className="mt-1 text-sm text-gray-300">
-                  {hit.overview?.split(' ').slice(0, 30).join(' ') + '...'}
+                  {hit.overview?.split(" ").slice(0, 30).join(" ") + "..."}
                 </p>
                 <div className="mt-3 flex items-center flex-col">
                   <p className="text-sm text-gray-300">{hit.release_year}</p>
@@ -241,9 +256,9 @@ function MovieItem({ hit }: MovieItemProps) {
                         key={rating}
                         className={cx(
                           hit.vote_average / 2 - 1 > rating
-                            ? 'text-yellow-400'
-                            : 'text-gray-200',
-                          'h-5 w-5 flex-shrink-0'
+                            ? "text-yellow-400"
+                            : "text-gray-200",
+                          "h-5 w-5 flex-shrink-0"
                         )}
                         aria-hidden="true"
                       />
@@ -271,7 +286,7 @@ function MoviesHeading({ children }: MoviesHeadingProps) {
   return (
     <header
       className="px-8 py-3 flex sticky top-20 z-20 border-l-4 border-red-700"
-      style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))' }}
+      style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))" }}
     >
       <h2 className="text-2xl font-black pr-4">{children}</h2>
     </header>
@@ -288,7 +303,7 @@ const LoadingIndicator = forwardRef(function LoadingIndicator(
 ) {
   return (
     <div ref={ref as React.ForwardedRef<HTMLDivElement>}>
-      {isLoading ? 'Loading...' : ''}
+      {isLoading ? "Loading..." : ""}
     </div>
   );
 });

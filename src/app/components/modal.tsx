@@ -6,7 +6,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import cx from "classnames";
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 
 import useOnClickOutside from "../hooks/useClickOutside";
 import { Movie } from "../types";
@@ -15,6 +15,7 @@ import { run } from "node:test";
 import { searchClient } from "../helpers/algolia";
 import { RelatedProducts, useRelatedProducts } from "@algolia/recommend-react";
 import algoliarecommend from "@algolia/recommend";
+import { useSearchBox } from "react-instantsearch";
 
 const Avatar = ({
   name,
@@ -157,15 +158,18 @@ type Video = {
 */
 const Modal = ({
   data,
+  setData,
   onClose,
   isOpen,
 }: {
   data: Movie | null;
+  setData: Dispatch<SetStateAction<Movie | null>>;
   onClose: () => void;
   isOpen: boolean;
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(modalRef, onClose);
+  const { refine } = useSearchBox();
 
   if (!data) return null;
 
@@ -198,32 +202,10 @@ const Modal = ({
     release_year,
   } = data;
 
-  // Column must be up to 3 columns
-  const COLUMNS = {
-    1: "grid-cols-1",
-    2: "grid-cols-2",
-    3: "grid-cols-3",
-  };
-
-  // const recommendClient = algoliarecommend(
-  //   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  //   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
-  // );
-
-  // const recommendedMovies = relatedProducts({
-  //   objectIDs: ["movie_520763"],
-  //   recommendClient,
-  //   indexName: "horror_movies",
-  //   itemComponent({ item }) {
-  //     return (
-  //       <pre>
-  //         <code>{JSON.stringify(item)}</code>
-  //       </pre>
-  //     );
-  //   },
-  // });
-
-  // console.log(recommendedMovies);
+  const recommendClient = algoliarecommend(
+    process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
+    process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
+  );
 
   return (
     <div
@@ -291,36 +273,44 @@ const Modal = ({
               See more on TMDB
             </a>
 
-            <section className="mt-4 py-4 relative z-10">
-              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
-                Genres
-              </h2>
-              <ul className="flex gap-4">
-                {genres.map((genre) => (
-                  <li key={genre}>
-                    <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-                      {genre}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <div className="flex gap-4">
+              <section className="mt-4 py-4 relative z-10">
+                <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
+                  Genres
+                </h2>
+                <ul className="flex gap-4">
+                  {genres.map((genre) => (
+                    <li key={genre}>
+                      <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                        {genre}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
 
-            <section className="mt-4 py-4 relative z-10 flex-wrap">
-              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
-                Directors
-              </h2>
-              <ul>
-                {directors.map((director) => (
-                  <li key={director.name}>
-                    <Avatar
-                      name={director.name}
-                      profile_path={director.profile_path}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
+              <section className="mt-4 py-4 relative z-10 flex-wrap">
+                <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4 mb-4">
+                  Directors
+                </h2>
+                <ul>
+                  {directors.map((director) => (
+                    <li
+                      key={director.name}
+                      onClick={() => {
+                        refine(director.name);
+                        onClose();
+                      }}
+                    >
+                      <Avatar
+                        name={director.name}
+                        profile_path={director.profile_path}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
 
             <section className="mt-4 py-4 relative z-10 flex-wrap">
               <h2 className="text-2xl font-bold mb-4 border-l-4 border-red-700 pl-4">
@@ -329,7 +319,13 @@ const Modal = ({
               <div>
                 <ul className="flex flex-wrap gap-4">
                   {cast.map((castMember) => (
-                    <li key={castMember.name}>
+                    <li
+                      key={castMember.name}
+                      onClick={() => {
+                        refine(castMember.name);
+                        onClose();
+                      }}
+                    >
                       <Avatar
                         name={castMember.name}
                         profile_path={castMember.profile_path}
@@ -340,26 +336,12 @@ const Modal = ({
               </div>
             </section>
 
-            {/* <section className="mt-4 flex p-4 relative z-10">
-              <h2 className="text-2xl font-bold">Languages</h2>
-              <ul>
-                {spoken_languages.map((language) => (
-                  <li key={language}>{language}</li>
-                ))}
-              </ul>
-            </section> */}
-
             {videos.length > 0 && (
               <section className="mt-4 py-4 relative z-10">
                 <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
                   Trailers
                 </h2>
-                <ul
-                  className={cx(
-                    "grid gap-4",
-                    videos.length >= 2 ? "grid-cols-3" : COLUMNS
-                  )}
-                >
+                <ul className={cx("grid gap-4 grid-cols-4")}>
                   {videos.map((video) => (
                     <li key={video.name}>
                       {video.site === "YouTube" && (
@@ -370,62 +352,47 @@ const Modal = ({
                 </ul>
               </section>
             )}
-
-            {/* <section className="mt-4 flex py-4 relative z-10"> */}
-            {/* <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4"> */}
-            {/* Budget */}
-            {/* </h2> */}
-            {/* <div className="flex items-center"> */}
-            {/* <BanknotesIcon className="w-6 h-6 text-red-700" /> */}
-            {/* <span>{convetBudget(budget)}</span> */}
-            {/* </div> */}
-            {/* </section> */}
-
-            {/* <section className="mt-4 flex py-4 relative z-10"> */}
-            {/* <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4"> */}
-            {/* Popularity */}
-            {/* </h2> */}
-            {/* <span>{popularity}</span> */}
-            {/* </section> */}
-
-            {/*  <section className="mt-4 flex py-4 relative z-10">
-              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
-                Vote Average
-              </h2>
-            </section> */}
-
-            {/* <section className="mt-4 flex py-4 relative z-10">
-              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
-                Vote Count
-              </h2>
-
-              <span>{vote_count}</span>
-            </section>
-
-            <section className="mt-4 flex py-4 relative z-10">
-              <h2 className="text-2xl font-bold border-l-4 border-red-700 pl-4">
-                Popularity Bucketed
-              </h2>
-              <span>{popularity_bucketed}</span>
-            </section> */}
           </div>
 
-          <div>
-            {/* <RelatedProducts
+          <div className="p-12">
+            <RelatedProducts
               recommendClient={recommendClient}
               indexName="horror_movies"
-              headerComponent={() => <h2>Recommended Movies</h2>}
+              headerComponent={() => (
+                <h2 className="text-red-700 text-3xl">Recommended Movies</h2>
+              )}
               objectIDs={[objectID]}
               itemComponent={({ item }) => (
-                <div>
-                  <Hit {...item} open />
+                <div
+                  className="p-4 cursor-pointer group"
+                  onClick={() => setData(item)}
+                >
+                  <img
+                    src={`https://www.themoviedb.org/t/p/w1280/${item.poster_path}`}
+                    alt=""
+                    className="w-full h-72 object-cover object-center rounded-lg"
+                  />
+                  <h3 className="text-2xl font-bold mt-4 group-hover:text-red-600">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-300 mt-2">{item.tagline}</p>
+                  <div className="flex flex-wrap gap-4 mt-2">
+                    {item.genres.map((genre) => (
+                      <span
+                        key={genre}
+                        className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"
+                      >
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
-              maxRecommendations={3}
+              maxRecommendations={4}
               classNames={{
-                list: "flex flex-wrap gap-4",
+                list: "grid grid-cols-4",
               }}
-            /> */}
+            />
             <button
               className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
               onClick={onClose}

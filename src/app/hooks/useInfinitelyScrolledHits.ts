@@ -1,11 +1,11 @@
-import { useInfiniteHits, useInstantSearch } from 'react-instantsearch';
-import { Movie } from '../types';
-import { useEffect, useRef } from 'react';
+import { useInfiniteHits, useInstantSearch } from "react-instantsearch";
+import { Movie } from "../types";
+import { useEffect, useRef } from "react";
 
 export function useInfinitelyScrolledHits() {
   const { hits, isLastPage, showMore } = useInfiniteHits<Movie>();
   const { status } = useInstantSearch();
-  const isLoading = status !== 'idle';
+  const isLoading = status !== "idle";
 
   const sentinelRef = useRef(null);
 
