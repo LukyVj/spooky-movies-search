@@ -229,7 +229,7 @@ function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
       <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
         <h2 className="sr-only">Horror Movies List</h2>
 
-        <ul className="overflow-scroll gap-4 scrollbar-hide flex">
+        <ul className="overflow-scroll gap-4 scrollbar-hide flex py-12">
           {hits.map((hit) => {
             return (
               <li key={hit.objectID} onClick={() => onSelect?.(hit)}>
@@ -297,7 +297,7 @@ function MovieCategory({ onSelect }: MovieCategoryProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
   return (
-    <ul className="overflow-scroll gap-4 scrollbar-hide flex">
+    <ul className="overflow-scroll gap-4 scrollbar-hide flex py-12">
       {hits.map((hit) => {
         return (
           <li
@@ -345,7 +345,7 @@ function MovieItem({ hit }: MovieItemProps) {
           />
 
           {isHovered && (
-            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/70 flex flex-col grow  h-full justify-between">
+            <div className="text-center p-2 bottom-0 overflow-hidden absolute bg-black/70 flex flex-col grow w-full h-full justify-between">
               {/* The following div must appear once the mouse is hovered with a delay */}
               <div
                 className={cx(
@@ -393,7 +393,7 @@ type MoviesHeadingProps = React.PropsWithChildren & {
 function MoviesHeading({ children, headerHeight }: MoviesHeadingProps) {
   return (
     <header
-      className="px-8 py-3 flex sticky z-20 border-l-4 border-red-700"
+      className="px-8 py-3 flex sticky z-20 border-l-4 border-red-700 ml-8"
       style={{
         filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 1))",
         top: headerHeight,
@@ -413,7 +413,10 @@ const LoadingIndicator = forwardRef(function LoadingIndicator(
   ref
 ) {
   return (
-    <div ref={ref as React.ForwardedRef<HTMLDivElement>}>
+    <div
+      ref={ref as React.ForwardedRef<HTMLDivElement>}
+      className="flex flex-col items-center justify-center px-16 h-72 bg-black rounded-lg shadow-lg shadow-black animate-pulse transition-all duration-500 ease-in-out"
+    >
       {isLoading ? "Loading..." : ""}
     </div>
   );
