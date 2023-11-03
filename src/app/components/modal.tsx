@@ -362,7 +362,7 @@ const Modal = ({
                 <h2 className="text-red-700 text-3xl">Recommended Movies</h2>
               )}
               objectIDs={[objectID]}
-              itemComponent={({ item }) => (
+              itemComponent={({ item }: any) => (
                 <div
                   className="p-4 cursor-pointer group"
                   onClick={() => setData(item)}
@@ -377,7 +377,7 @@ const Modal = ({
                   </h3>
                   <p className="text-gray-300 mt-2">{item.tagline}</p>
                   <div className="flex flex-wrap gap-4 mt-2">
-                    {item.genres.map((genre) => (
+                    {item.genres.map((genre: string) => (
                       <span
                         key={genre}
                         className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"
