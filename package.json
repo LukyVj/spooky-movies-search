@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@algolia/recommend": "^4.20.0",
+    "@algolia/recommend-js": "^1.10.0",
     "@algolia/recommend-react": "^1.10.0",
     "@heroicons/react": "^2.0.18",
     "algoliasearch": "^4.20.0",

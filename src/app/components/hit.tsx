@@ -5,8 +5,9 @@ import { Highlight } from "react-instantsearch";
 
 import Link from "next/link";
 
-const Hit = (hit: any) => {
-  // console.log(hit);
+const Hit = (data: any) => {
+  const hit = data.item ? data.item : data;
+
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div

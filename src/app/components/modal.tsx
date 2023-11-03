@@ -13,9 +13,10 @@ import { Movie } from "../types";
 import { VideoWithPreview } from "./video-with-preview";
 import { run } from "node:test";
 import { searchClient } from "../helpers/algolia";
-import { RelatedProducts, useRelatedProducts } from "@algolia/recommend-react";
+import { relatedProducts } from "@algolia/recommend-js";
 import algoliarecommend from "@algolia/recommend";
 import Hit from "./hit";
+import { RelatedProducts } from "@algolia/recommend-react";
 
 const Avatar = ({
   name,
@@ -211,12 +212,20 @@ const Modal = ({
     process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
   );
 
-  // const recommendedMovies = useRelatedProducts({
-  //   indexName: "horror_movies",
-  //   objectIDs: [objectID],
-  //   threshold: 1,
-  //   recommendClient,
-  // });
+  const recommendedMovies = relatedProducts({
+    objectIDs: ["movie_520763"],
+    recommendClient,
+    indexName: "horror_movies",
+    itemComponent({ item }) {
+      return (
+        <pre>
+          <code>{JSON.stringify(item)}</code>
+        </pre>
+      );
+    },
+  });
+
+  console.log(recommendedMovies);
 
   return (
     <div
@@ -350,7 +359,7 @@ const Modal = ({
                 <ul
                   className={cx(
                     "grid gap-4",
-                    videos.length >= 3 ? "grid-cols-3" : COLUMNS
+                    videos.length >= 2 ? "grid-cols-3" : COLUMNS
                   )}
                 >
                   {videos.map((video) => (
@@ -404,18 +413,21 @@ const Modal = ({
           </div>
 
           <div>
-            <header>Recommended Movies</header>
-
-            <div>
-              {/* <ul>
-                {recommendedMovies.map((movie) => (
-                  <li key={movie.objectID}>
-                    <Hit {...movie} />
-                  </li>
-                ))}
-              </ul> */}
-            </div>
-
+            <RelatedProducts
+              recommendClient={recommendClient}
+              indexName="horror_movies"
+              headerComponent={() => <h2>Recommended Movies</h2>}
+              objectIDs={[objectID]}
+              itemComponent={({ item }) => (
+                <div>
+                  <Hit {...item} open />
+                </div>
+              )}
+              maxRecommendations={3}
+              classNames={{
+                list: "flex flex-wrap gap-4",
+              }}
+            />
             <button
               className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded absolute top-4 right-4 z-20"
               onClick={onClose}

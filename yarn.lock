@@ -93,6 +93,16 @@
   resolved "https://registry.yarnpkg.com/@algolia/recommend-core/-/recommend-core-1.10.0.tgz#52c055009045a87c8a6d02b3d83670654a526033"
   integrity sha512-dfjqFN2JqzLUW4OEhwT9Gnq2ef6hZcexSFXGkc4QOr3erdWYF77VdCXR1NjEY8Vz7jeiqaGKOItOpR2n4QAoVw==
 
+"@algolia/recommend-js@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@algolia/recommend-js/-/recommend-js-1.10.0.tgz#38f9eb961a6a1076256b565586b0a6ce8bd6f09e"
+  integrity sha512-3TAbN16LdfL+/szBNzNW/JU2mfD/nHnWUF0vM8YE5hVlRaoGTSqoKBF2Ja5tsr/fCgJOcBM0MiWqdIoSUXVGuQ==
+  dependencies:
+    "@algolia/recommend-core" "1.10.0"
+    "@algolia/recommend-vdom" "1.10.0"
+    htm "^3.0.0"
+    preact "^10.0.0"
+
 "@algolia/recommend-react@^1.10.0":
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/@algolia/recommend-react/-/recommend-react-1.10.0.tgz#527ecf93380c503dcba24d5bdf14f8db826acf44"
@@ -2209,7 +2219,7 @@ postcss@8.4.31, postcss@^8, postcss@^8.4.23:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-preact@^10.10.0:
+preact@^10.0.0, preact@^10.10.0:
   version "10.18.1"
   resolved "https://registry.yarnpkg.com/preact/-/preact-10.18.1.tgz#3b84bb305f0b05f4ad5784b981d15fcec4e105da"
   integrity sha512-mKUD7RRkQQM6s7Rkmi7IFkoEHjuFqRQUaXamO61E6Nn7vqF/bo7EZCmSyrUnp2UWHw0O7XjZ2eeXis+m7tf4lg==
