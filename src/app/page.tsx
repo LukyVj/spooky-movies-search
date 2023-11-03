@@ -58,8 +58,21 @@ function Search() {
       }
     });
 
+    window.addEventListener("scroll", (e) => {
+      // Stop listening when the scroll value is over 600
+      if (
+        headerRef.current &&
+        headerRef.current.getBoundingClientRect().top < 0
+      ) {
+        setHeaderSize(headerRef.current!.getBoundingClientRect().height);
+      }
+    });
+
     return () => {
       window.removeEventListener("resize", () => {
+        setHeaderSize(headerRef?.current!.getBoundingClientRect().height);
+      });
+      window.removeEventListener("scroll", () => {
         setHeaderSize(headerRef?.current!.getBoundingClientRect().height);
       });
     };
@@ -102,7 +115,14 @@ function Search() {
             >
               <SearchBox
                 className="w-full h-[50px] bg-black rounded-lg shadow-lg left-0 right-0 mx-auto px-4 py-2 ring ring-red-700 focus:outline-none focus:ring-2 focus:border-4 focus:border-red-950 placeholder-gray-500 text-white text-xl"
-                classNames={{ input: "bg-transparent w-full" }}
+                classNames={{
+                  input:
+                    "bg-transparent w-full border-0 ring-0 focus:ring-0 outline-none",
+                  submitIcon: "hidden",
+                  resetIcon: "hidden",
+                  loadingIcon:
+                    "absolute right-4 top-1/2 transform -translate-y-1/2",
+                }}
                 placeholder="Search for a movie, an actor, director…"
               />
 
@@ -184,6 +204,7 @@ type AllMoviesProps = {
 function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
+  console.log(onSelect);
   return (
     <div className="mb-8 py-8">
       <MoviesHeading headerHeight={headerHeight}>All Movies</MoviesHeading>
@@ -201,6 +222,7 @@ function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
           })}
         </ul>
       </div>
+
       <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
     </div>
   );
@@ -239,7 +261,7 @@ function CategorizedMovies({ onSelect, headerHeight }: CategorizedMoviesProps) {
           <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
             <Index indexName={indexName}>
               <Configure filters={`genres:"${category}"`} />
-              <MovieCategory />
+              <MovieCategory onSelect={onSelect} />
             </Index>
           </div>
         </div>
@@ -255,11 +277,19 @@ type MovieCategoryProps = {
 function MovieCategory({ onSelect }: MovieCategoryProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
+  console.log(onSelect);
+
   return (
     <ul className="overflow-scroll gap-4 scrollbar-hide flex">
       {hits.map((hit) => {
         return (
-          <li key={hit.objectID} onClick={() => onSelect?.(hit)}>
+          <li
+            key={hit.objectID}
+            onClick={() => {
+              console.log("click");
+              onSelect?.(hit);
+            }}
+          >
             <MovieItem hit={hit} />
           </li>
         );
