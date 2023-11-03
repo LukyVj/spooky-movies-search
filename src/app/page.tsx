@@ -9,6 +9,7 @@ import {
   InstantSearch,
   SearchBox,
   useCurrentRefinements,
+  useHits,
 } from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
 import { forwardRef, useEffect, useState } from "react";
@@ -155,13 +156,13 @@ type CategorizedMoviesProps = {
 };
 
 function CategorizedMovies({ onSelect }: CategorizedMoviesProps) {
-  const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
+  const { hits } = useHits();
 
   const rawCategories = hits.reduce<Record<string, Movie[]>>(
     (categories, movie) => {
-      movie.genres.forEach((category) => {
+      (movie.genres as string[]).forEach((category) => {
         // eslint-disable-next-line no-param-reassign
-        (categories[category] ||= []).push(movie);
+        (categories[category] ||= []).push(movie as any);
       });
 
       return categories;
@@ -169,33 +170,46 @@ function CategorizedMovies({ onSelect }: CategorizedMoviesProps) {
     {}
   );
 
-  const categories = Object.entries(rawCategories || {}).sort(
+  const categories = Object.keys(rawCategories || {}).sort(
     (a, b) => b[1].length - a[1].length
   );
 
   return (
     <div className="relative">
-      {categories.map(([category, hits]) => (
+      {categories.map((category) => (
         <div className="mb-8 py-8" key={category}>
           <MoviesHeading>{category}</MoviesHeading>
 
           <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
-            <ul className="overflow-scroll gap-4 scrollbar-hide flex">
-              {hits.map((hit) => {
-                return (
-                  <li key={hit.objectID} onClick={() => onSelect?.(hit)}>
-                    <MovieItem hit={hit} />
-                  </li>
-                );
-              })}
-            </ul>
+            <Index indexName={indexName}>
+              <Configure filters={`genres:"${category}"`} />
+              <MovieCategory />
+            </Index>
           </div>
         </div>
       ))}
-      <div className="bg-red-700 p-8">
-        <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
-      </div>
     </div>
+  );
+}
+
+type MovieCategoryProps = {
+  onSelect?(hit: Movie): void;
+};
+
+function MovieCategory({ onSelect }: MovieCategoryProps) {
+  const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
+
+  return (
+    <ul className="overflow-scroll gap-4 scrollbar-hide flex">
+      {hits.map((hit) => {
+        return (
+          <li key={hit.objectID} onClick={() => onSelect?.(hit)}>
+            <MovieItem hit={hit} />
+          </li>
+        );
+      })}
+      <LoadingIndicator ref={sentinelRef} isLoading={isLoading} />
+    </ul>
   );
 }
 
