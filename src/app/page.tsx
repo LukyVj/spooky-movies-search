@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import {
   Configure,
   Highlight,
-  Hits,
   Index,
   InstantSearch,
   SearchBox,
