@@ -7,9 +7,19 @@ const client2 = algoliasearch(
   process.env.ALGOLIA_ADMIN_API_KEY
 );
 
-const index1 = client2.initIndex("movies_copy");
+const client1 = algoliasearch("xxxx", "xxx");
+
+const index1 = client1.initIndex("movies");
 const index2 = client2.initIndex("horror_movies");
 
-index1.getSettings().then((settings) => {
-  index2.setSettings(settings);
+index1.browseObjects({
+  batch: (hits) => {
+    hits.map((hit) => {
+      if (hit.record_type === "movie" && hit.genres.includes("Horror")) {
+        console.log(hit.title);
+        index2.saveObject(hit);
+        console.log("saved", hit.title);
+      }
+    });
+  },
 });

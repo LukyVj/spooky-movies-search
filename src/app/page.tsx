@@ -341,8 +341,8 @@ function MovieItem({ hit }: MovieItemProps) {
       >
         <div className="relative z-10 flex">
           <img
-            src={`https://www.themoviedb.org/t/p/w154/${hit.poster_path}`}
-            alt={`https://www.themoviedb.org/t/p/w154/${hit.poster_path}`}
+            src={`https://www.themoviedb.org/t/p/w342/${hit.poster_path}`}
+            alt={`https://www.themoviedb.org/t/p/w342/${hit.poster_path}`}
             className="h-72 object-cover object-center rounded-lg shadow-lg shadow-black"
             loading="lazy"
             style={{ minWidth: "200px" }}

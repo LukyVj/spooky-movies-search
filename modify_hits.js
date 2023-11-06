@@ -1,11 +1,12 @@
 const algoliasearch = require("algoliasearch");
+require("dotenv").config();
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
   process.env.ALGOLIA_ADMIN_API_KEY
 );
 
-const index = client.initIndex("movies_copy");
+const index = client.initIndex("horror_movies");
 
 index.browseObjects({
   batch: (hits) => {
