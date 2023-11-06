@@ -38,14 +38,14 @@ function shortenDesc(hit: Movie) {
     ? hit.tagline.length > 200
       ? `${hit.tagline?.substring(0, 100)}...`
       : hit.tagline
-    : hit.overview!.length > 200
+    : hit.overview && hit.overview.length > 200
     ? `${hit.overview?.substring(0, 100)}...`
     : hit.overview;
 }
 
 export default function Home() {
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName}>
+    <InstantSearch searchClient={searchClient} indexName={indexName} routing>
       <Search />
     </InstantSearch>
   );
