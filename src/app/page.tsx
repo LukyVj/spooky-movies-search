@@ -171,7 +171,10 @@ function Search() {
         <div className="mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8 bg-black text-center">
           <p>
             Made with{" "}
-            <a href="https://www.algolia.com/" className="text-red-500">
+            <a
+              href="https://www.algolia.com/?utm_source=https://spooky-movies-search.vercel.app/"
+              className="text-red-500"
+            >
               Algolia
             </a>
             ,{" "}
@@ -192,7 +195,7 @@ function Search() {
             .
           </p>
 
-          <a href="https://algolia.com">
+          <a href="https://algolia.com?utm_source=https://spooky-movies-search.vercel.app/">
             <AlgoliaLogo className="w-40 mt-12 h-auto m-auto text-red-600" />
           </a>
         </div>
