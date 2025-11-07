@@ -28,6 +28,10 @@ const Hero = dynamic(() => import("./components/hero"), {
   ssr: false,
 });
 
+const PosterWall = dynamic(() => import("./components/poster-wall"), {
+  ssr: false,
+});
+
 const searchClient = algoliasearch(
   "PVXYD3XMQP",
   "69636a752c16bee55133304edea993f7"
@@ -94,7 +98,8 @@ function Search() {
   }, [selectedMovie]);
 
   return (
-    <main>
+    <main className="relative">
+      <PosterWall />
       <Hero />
       <Index indexName={indexName}>
         <div className={cx("relative mih-screen")}>
@@ -230,13 +235,13 @@ function AllMovies({ onSelect, headerHeight }: AllMoviesProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
   return (
-    <div className="mb-8 py-8">
+    <div className="mb-4 3xl:mb-8 py-4 3xl:py-8">
       {/* <MoviesHeading headerHeight={headerHeight}>All Movies</MoviesHeading> */}
 
       <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
         <h2 className="sr-only">Horror Movies List</h2>
 
-        <ul className="overflow-scroll gap-4 scrollbar-hide flex py-12">
+        <ul className="overflow-scroll gap-4 scrollbar-hide flex py-6 3xl:py-12">
           {hits.map((hit) => {
             return (
               <li key={hit.objectID} onClick={() => onSelect?.(hit)}>
@@ -281,7 +286,7 @@ function CategorizedMovies({ onSelect, headerHeight }: CategorizedMoviesProps) {
   return (
     <div className="relative">
       {categories.map((category) => (
-        <div className="mb-8 py-8" key={category}>
+        <div className="mb-4 3xl:mb-8 py-4 3xl:py-8" key={category}>
           <MoviesHeading headerHeight={headerHeight}>{category}</MoviesHeading>
 
           <div className="mx-auto max-w-full overflow-hidden sm:px-6 lg:px-8">
@@ -304,7 +309,7 @@ function MovieCategory({ onSelect }: MovieCategoryProps) {
   const { hits, sentinelRef, isLoading } = useInfinitelyScrolledHits();
 
   return (
-    <ul className="overflow-scroll gap-4 scrollbar-hide flex py-12">
+    <ul className="overflow-scroll gap-4 scrollbar-hide flex py-6 3xl:py-12">
       {hits.map((hit) => {
         return (
           <li
